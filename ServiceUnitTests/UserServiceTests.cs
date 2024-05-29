@@ -1,7 +1,7 @@
 ﻿using Moq;
-using PersonRegistration.BusinessLogic.Services;
-using PersonRegistration.Database.Interfaces;
-using PersonRegistration.Shared.Entities;
+using PeopleRegistration.BusinessLogic.Services;
+using PeopleRegistration.Database.Interfaces;
+using PeopleRegistration.Shared.Entities;
 
 namespace BusinessLogicUnitTests
 {

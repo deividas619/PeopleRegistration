@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using PersonRegistration.Shared.DTOs;
+using PeopleRegistration.Shared.DTOs;
 using System.Security.Claims;
-using PersonRegistration.API.Controllers;
-using PersonRegistration.BusinessLogic.Interfaces;
+using PeopleRegistration.API.Controllers;
+using PeopleRegistration.BusinessLogic.Interfaces;
 
 namespace ControllerUnitTests
 {

@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PersonRegistration.API\PersonRegistration.API.csproj" />
+    <ProjectReference Include="..\PeopleRegistration.API\PeopleRegistration.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>
