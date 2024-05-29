@@ -56,7 +56,7 @@ namespace PersonRegistration.API
             });
             builder.Services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "NotesAPI", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "PersonRegistrationAPI", Version = "v1" });
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
