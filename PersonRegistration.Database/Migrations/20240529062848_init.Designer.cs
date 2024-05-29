@@ -12,7 +12,7 @@ using PersonRegistration.Database;
 namespace PersonRegistration.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240528172504_init")]
+    [Migration("20240529062848_init")]
     partial class init
     {
         /// <inheritdoc />
