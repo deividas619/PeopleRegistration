@@ -6,6 +6,8 @@ namespace PeopleRegistration.Database.Interfaces
     {
         User GetUser(string username);
         void SaveNewUser(User user);
-        void ChangeUserPassword(User user);
+        void UpdateUser(User user);
+        int GetRoleCount(UserRole role);
+        void DeleteUser(User user);
     }
 }

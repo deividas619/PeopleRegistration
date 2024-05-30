@@ -37,15 +37,20 @@ namespace PeopleRegistration.BusinessLogic.Services
                 var user = repository.GetUser(username);
 
                 if (user is null)
-                    return new ResponseDto(false, "Username does not exist!");
+                    return new ResponseDto(false, "User does not exist!");
 
-                if (!VerifyPasswordHash(password, user.Password, user.PasswordSalt))
-                    return new ResponseDto(false, "Password is incorrect!");
+                if (user.IsActive)
+                {
+                    if (!VerifyPasswordHash(password, user.Password, user.PasswordSalt))
+                        return new ResponseDto(false, "Password is incorrect!");
 
-                if (!user.PasswordNeverExpires && user.PasswordSetDate.AddDays(90) < DateOnly.FromDateTime(DateTime.Now))
-                    return new ResponseDto(false, "Password has expired. Please change your password!");
+                    if (!user.PasswordNeverExpires && user.PasswordSetDate.AddDays(90) < DateOnly.FromDateTime(DateTime.Now))
+                        return new ResponseDto(false, "Password has expired. Please change your password!");
 
-                return new ResponseDto(true, "User logged in!");
+                    return new ResponseDto(true, "User logged in!");
+                }
+
+                return new ResponseDto(false, $"The User '{user.Username} ({user.Id})' is suspended! Contact system administrator!");
             }
             catch (Exception e)
             {
@@ -59,13 +64,14 @@ namespace PeopleRegistration.BusinessLogic.Services
             try
             {
                 var user = repository.GetUser(username);
+
                 if (!VerifyPasswordHash(oldPassword, user.Password, user.PasswordSalt))
                     return new ResponseDto(false, "Old password is incorrect!");
                 
                 CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
                 user.Password = passwordHash;
                 user.PasswordSalt = passwordSalt;
-                repository.ChangeUserPassword(user);
+                repository.UpdateUser(user);
 
                 return new ResponseDto(true, "Password updated!");
 
@@ -77,11 +83,87 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
         }
 
+        public ResponseDto ChangeRole(string username, UserRole newRole)
+        {
+            try
+            {
+                var user = repository.GetUser(username);
+
+                if (user is null)
+                    return new ResponseDto(false, "User does not exist!");
+
+                if (user.IsActive)
+                {
+                    if (newRole != UserRole.Admin && repository.GetRoleCount(newRole) == 1 && user.Role == UserRole.Admin)
+                        return new ResponseDto(false, "There cannot be 0 admins in the system!");
+
+                    user.Role = newRole;
+                    repository.UpdateUser(user);
+
+                    return new ResponseDto(true, $"Role for User '{user.Id} ({user.Id})' updated successfully!");
+                }
+
+                return new ResponseDto(false, $"Cannot change role for a User '{user.Username} ({user.Id})' that is suspended!");
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(UserService)}.{nameof(ChangeRole)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        public ResponseDto SuspendUser(string username)
+        {
+            try
+            {
+                var user = repository.GetUser(username);
+
+                if (user is null)
+                    return new ResponseDto(false, "User does not exist!");
+
+                if (user.IsActive)
+                {
+                    user.IsActive = false;
+                    repository.UpdateUser(user);
+
+                    return new ResponseDto(true, $"User '{user.Username} ({user.Id})' suspended successfully!");
+                }
+
+                return new ResponseDto(false, $"User '{user.Username} ({user.Id})' is already suspended!");
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(UserService)}.{nameof(ChangeRole)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        public ResponseDto DeleteUser(string username)
+        {
+            try
+            {
+                var user = repository.GetUser(username);
+
+                if (user is null)
+                    return new ResponseDto(false, "User does not exist!");
+
+                repository.DeleteUser(user);
+
+                return new ResponseDto(true, $"User '{user.Username} ({user.Id})' deleted successfully!");
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(UserService)}.{nameof(DeleteUser)}]: {e.Message}");
+                throw;
+            }
+        }
+
         private User CreateUser(string username, string password)
         {
             try
             {
                 CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+
                 var user = new User
                 {
                     Id = Guid.NewGuid(),

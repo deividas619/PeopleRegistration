@@ -26,7 +26,7 @@ namespace PeopleRegistration.Database.Repositories
                 context.Users.Add(user);
                 context.SaveChanges();
 
-                Log.Information($"[{nameof(SaveNewUser)}]: Successfully added User: {user.Id}");
+                Log.Information($"[{nameof(SaveNewUser)}]: Successfully created User: '{user.Username} ({user.Id})'");
             }
             catch (Exception e)
             {
@@ -35,18 +35,47 @@ namespace PeopleRegistration.Database.Repositories
             }
         }
 
-        public void ChangeUserPassword(User user)
+        public void UpdateUser(User user)
         {
             try
             {
                 context.Update(user);
                 context.SaveChanges();
 
-                Log.Information($"[{nameof(UserRepository)}.{nameof(ChangeUserPassword)}]: Successfully changed password for User: {user.Id}");
+                Log.Information($"[{nameof(UserRepository)}.{nameof(UpdateUser)}]: Successfully updated User: '{user.Username} ({user.Id})'");
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserRepository)}.{nameof(ChangeUserPassword)}]: {e.Message}");
+                Log.Error($"[{nameof(UserRepository)}.{nameof(UpdateUser)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        public void DeleteUser(User user)
+        {
+            try
+            {
+                context.Remove(user);
+                context.SaveChanges();
+
+                Log.Information($"[{nameof(UserRepository)}.{nameof(DeleteUser)}]: Successfully deleted User: '{user.Username} ({user.Id})'");
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(UserRepository)}.{nameof(DeleteUser)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        public int GetRoleCount(UserRole role)
+        {
+            try
+            {
+                return context.Users.Count(u => u.Role == role);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(UserRepository)}.{nameof(GetRoleCount)}]: {e.Message}");
                 throw;
             }
         }
