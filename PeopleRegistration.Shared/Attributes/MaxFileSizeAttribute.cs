@@ -7,7 +7,7 @@ namespace PeopleRegistration.Shared.Attributes
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if (value is IFormFile file)
+            if (value is IFormFile file && value is not null)
             {
                 if (file.Length > maxFileSize)
                     return new ValidationResult($"Exceeded maximum file size of {maxFileSize} bytes!");

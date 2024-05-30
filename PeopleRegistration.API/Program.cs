@@ -15,6 +15,7 @@ using Serilog;
 //add fixture and specimen for tests
 //create custom exceptions instead of note/category object guid id error code
 //add remove image method
+//check PersonInformation email uniqueness in the service
 
 namespace PeopleRegistration.API
 {

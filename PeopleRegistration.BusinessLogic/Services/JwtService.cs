@@ -3,16 +3,18 @@ using PeopleRegistration.BusinessLogic.Interfaces;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using PeopleRegistration.Shared.Entities;
 
 namespace PeopleRegistration.BusinessLogic.Services
 {
     public class JwtService(IConfiguration configuration) : IJwtService
     {
-        public string GetJwtToken(string username)
+        public string GetJwtToken(string username, UserRole role)
         {
             List<Claim> claims =
             [
-                new(ClaimTypes.Name, username)
+                new(ClaimTypes.Name, username),
+                new (ClaimTypes.Role, role.ToString())
             ];
 
             var secretToken = configuration.GetSection("Jwt:Key").Value;

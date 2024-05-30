@@ -47,7 +47,7 @@ namespace PeopleRegistration.BusinessLogic.Services
                     if (!user.PasswordNeverExpires && user.PasswordSetDate.AddDays(90) < DateOnly.FromDateTime(DateTime.Now))
                         return new ResponseDto(false, "Password has expired. Please change your password!");
 
-                    return new ResponseDto(true, "User logged in!");
+                    return new ResponseDto(true, "User logged in!", user.Role);
                 }
 
                 return new ResponseDto(false, $"The User '{user.Username} ({user.Id})' is suspended! Contact system administrator!");
@@ -94,8 +94,11 @@ namespace PeopleRegistration.BusinessLogic.Services
 
                 if (user.IsActive)
                 {
-                    if (newRole != UserRole.Admin && repository.GetRoleCount(newRole) == 1 && user.Role == UserRole.Admin)
+                    if (newRole != UserRole.Admin && repository.GetRoleCount(UserRole.Admin) == 1)
                         return new ResponseDto(false, "There cannot be 0 admins in the system!");
+                    
+                    if (newRole == user.Role)
+                        return new ResponseDto(false, "User already has that role!");
 
                     user.Role = newRole;
                     repository.UpdateUser(user);
@@ -112,7 +115,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
         }
 
-        public ResponseDto SuspendUser(string username)
+        public ResponseDto GetUserActiveStatus(string username)
         {
             try
             {
@@ -121,24 +124,17 @@ namespace PeopleRegistration.BusinessLogic.Services
                 if (user is null)
                     return new ResponseDto(false, "User does not exist!");
 
-                if (user.IsActive)
-                {
-                    user.IsActive = false;
-                    repository.UpdateUser(user);
+                return new ResponseDto(true, $"User '{user.Username} ({user.Id})' activity status is '{user.IsActive}'!");
 
-                    return new ResponseDto(true, $"User '{user.Username} ({user.Id})' suspended successfully!");
-                }
-
-                return new ResponseDto(false, $"User '{user.Username} ({user.Id})' is already suspended!");
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(ChangeRole)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}.{nameof(GetUserActiveStatus)}]: {e.Message}");
                 throw;
             }
         }
 
-        public ResponseDto DeleteUser(string username)
+        public ResponseDto ChangeUserActiveStatus(string username, string loggedInUsername)
         {
             try
             {
@@ -146,6 +142,35 @@ namespace PeopleRegistration.BusinessLogic.Services
 
                 if (user is null)
                     return new ResponseDto(false, "User does not exist!");
+
+                if (username == loggedInUsername)
+                    return new ResponseDto(false, "Cannot deactivate your own account!");
+
+                user.IsActive = !user.IsActive;
+
+                repository.UpdateUser(user);
+
+                return new ResponseDto(true, $"User '{user.Username} ({user.Id})' activity status changed to '{user.IsActive}' successfully!");
+
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(UserService)}.{nameof(ChangeUserActiveStatus)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        public ResponseDto DeleteUser(string username, string loggedInUsername)
+        {
+            try
+            {
+                var user = repository.GetUser(username);
+
+                if (user is null)
+                    return new ResponseDto(false, "User does not exist!");
+
+                if (username == loggedInUsername)
+                    return new ResponseDto(false, "Cannot delete your own account!");
 
                 repository.DeleteUser(user);
 

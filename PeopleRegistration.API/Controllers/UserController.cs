@@ -43,7 +43,7 @@ namespace PeopleRegistration.API.Controllers
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
 
-                return Ok(jwtService.GetJwtToken(username));
+                return Ok(jwtService.GetJwtToken(username, response.Role));
             }
             catch (Exception e)
             {
@@ -73,7 +73,7 @@ namespace PeopleRegistration.API.Controllers
         }
 
         [HttpPost("ChangeRole")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public ActionResult<ResponseDto> ChangeRole([FromQuery] string username, [FromQuery] UserRole newRole)
         {
             try
@@ -91,13 +91,13 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
-        [HttpPost("SuspendUser")]
-        [Authorize(Roles = "Admin")]
-        public ActionResult<ResponseDto> SuspendUser([FromQuery] string username)
+        [HttpPost("GetUserActiveStatus")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public ActionResult<ResponseDto> GetUserActiveStatus([FromQuery] string username)
         {
             try
             {
-                var response = userService.SuspendUser(username);
+                var response = userService.GetUserActiveStatus(username);
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
@@ -105,18 +105,41 @@ namespace PeopleRegistration.API.Controllers
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserController)}.{nameof(SuspendUser)}]: {e.Message}");
+                Log.Error($"[{nameof(UserController)}.{nameof(GetUserActiveStatus)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        [HttpPost("ChangeUserActiveStatus")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public ActionResult<ResponseDto> ChangeUserActiveStatus([FromQuery] string username)
+        {
+            try
+            {
+                var loggedInUsername = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+
+                var response = userService.ChangeUserActiveStatus(username, loggedInUsername);
+
+                if (!response.IsSuccess)
+                    return BadRequest(response.Message);
+                return response;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(UserController)}.{nameof(ChangeUserActiveStatus)}]: {e.Message}");
                 throw;
             }
         }
 
         [HttpPost("DeleteUser")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public ActionResult<ResponseDto> DeleteUser([FromQuery] string username)
         {
             try
             {
-                var response = userService.DeleteUser(username);
+                var loggedInUsername = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+
+                var response = userService.DeleteUser(username, loggedInUsername);
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);

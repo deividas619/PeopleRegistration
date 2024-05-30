@@ -1,7 +1,9 @@
-﻿namespace PeopleRegistration.BusinessLogic.Interfaces
+﻿using PeopleRegistration.Shared.Entities;
+
+namespace PeopleRegistration.BusinessLogic.Interfaces
 {
     public interface IJwtService
     {
-        public string GetJwtToken(string username);
+        public string GetJwtToken(string username, UserRole role);
     }
 }
