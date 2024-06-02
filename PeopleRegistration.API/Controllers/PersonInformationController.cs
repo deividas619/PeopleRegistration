@@ -1,38 +1,111 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PeopleRegistration.BusinessLogic.Interfaces;
-using PeopleRegistration.Shared.Attributes;
 using PeopleRegistration.Shared.DTOs;
-using PeopleRegistration.Shared.Entities;
 using Serilog;
 using System.Security.Claims;
+using PeopleRegistration.Shared.Entities;
 
 namespace PeopleRegistration.API.Controllers
 {
-    public class PersonInformationController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class PersonInformationController(IPersonInformationService personInformationService) : Controller
     {
-        [ApiController]
-        [Route("api/[controller]")]
-        [Authorize]
-        public class UserController(IUserService userService, IJwtService jwtService) : ControllerBase
+        [HttpGet("GetAllPeopleInformationForUser")]
+        [ResponseCache(Duration = 60)]
+        public async Task<ActionResult<IEnumerable<PersonInformation>>> GetAllPeopleInformationForUser([FromQuery] UserDto request)
         {
-            [HttpPost("Register")]
-            [Unauthorized]
-            public ActionResult<ResponseDto> Register([FromQuery] UserDto request)
+            try
             {
-                try
-                {
-                    var response = userService.Register(request.Username, request.Password);
+                var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                var response = await personInformationService.GetAllPeopleInformationForUser(username);
 
-                    if (!response.IsSuccess)
-                        return BadRequest(response.Message);
-                    return response;
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"[{nameof(UserController)}.{nameof(Register)}]: {e.Message}");
-                    throw;
-                }
+                if (!response.IsSuccess)
+                    return BadRequest(response.Message);
+                return response;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationController)}.{nameof(GetAllPeopleInformationForUser)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        [HttpGet("GetSinglePersonInformationForUser")]
+        [ResponseCache(Duration = 60)]
+        public async Task<ActionResult<PersonInformation>> GetSinglePersonInformationForUser([FromQuery] UserDto request)
+        {
+            try
+            {
+                var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                var response = await personInformationService.GetSinglePersonInformationForUser(username);
+
+                if (!response.IsSuccess)
+                    return BadRequest(response.Message);
+                return response;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationController)}.{nameof(GetSinglePersonInformationForUser)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        [HttpPost("AddPersonInformationForUser")]
+        public async Task<ActionResult<PersonInformation>> AddPersonInformationForUser([FromQuery] UserDto request)
+        {
+            try
+            {
+                var response = await personInformationService.AddPersonInformationForUser(username);
+
+                if (!response.IsSuccess)
+                    return BadRequest(response.Message);
+                return response;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationController)}.{nameof(AddPersonInformationForUser)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        [HttpPost("UpdatePersonInformationForUser")]
+        public async Task<ActionResult<PersonInformation>> UpdatePersonInformationForUser([FromQuery] UserDto request)
+        {
+            try
+            {
+                var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                var response = await personInformationService.UpdatePersonInformationForUser();
+
+                if (!response.IsSuccess)
+                    return BadRequest(response.Message);
+                return response;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationController)}.{nameof(UpdatePersonInformationForUser)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        [HttpPost("DeletePersonInformationForUser")]
+        public async Task<ActionResult<PersonInformation>> DeletePersonInformationForUser([FromQuery] UserDto request)
+        {
+            try
+            {
+                var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                var response = await personInformationService.DeletePersonInformationForUser();
+
+                if (!response.IsSuccess)
+                    return BadRequest(response.Message);
+                return response;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationController)}.{nameof(DeletePersonInformationForUser)}]: {e.Message}");
+                throw;
             }
         }
     }
