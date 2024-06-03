@@ -33,11 +33,15 @@ namespace PeopleRegistration.Database.Repositories
             }
         }
 
-        public async Task<PersonInformation> AddPersonInformationForUser(string username)
+        public async Task<PersonInformation> AddPersonInformationForUser(PersonInformation personInformation)
         {
             try
             {
-                return null;
+                context.PeopleInformation.Add(personInformation);
+                await context.SaveChangesAsync();
+
+                Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(AddPersonInformationForUser)}]: Successfully added Person Information: {personInformation.Id}");
+                return personInformation;
             }
             catch (Exception e)
             {

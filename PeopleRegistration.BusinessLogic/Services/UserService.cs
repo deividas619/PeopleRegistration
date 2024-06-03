@@ -100,10 +100,13 @@ namespace PeopleRegistration.BusinessLogic.Services
                     if (newRole == user.Role)
                         return new ResponseDto(false, "User already has that role!");
 
+                    if (user.Role == UserRole.Admin && newRole == UserRole.Regular)
+                        return new ResponseDto(false, "An admin cannot downgrade themselves to a regular user!");
+
                     user.Role = newRole;
                     repository.UpdateUser(user);
 
-                    return new ResponseDto(true, $"Role for User '{user.Id} ({user.Id})' updated successfully!");
+                    return new ResponseDto(true, $"Role for User '{user.Username} ({user.Id})' updated successfully!");
                 }
 
                 return new ResponseDto(false, $"Cannot change role for a User '{user.Username} ({user.Id})' that is suspended!");
@@ -197,8 +200,7 @@ namespace PeopleRegistration.BusinessLogic.Services
                     PasswordSalt = passwordSalt,
                     PasswordSetDate = DateOnly.FromDateTime(DateTime.Now),
                     PasswordNeverExpires = false,
-                    Role = UserRole.Regular,
-                    IsActive = true
+                    Role = UserRole.Regular
                 };
 
                 if (string.Equals(username, "admin", StringComparison.OrdinalIgnoreCase))

@@ -1,15 +1,19 @@
-﻿namespace PeopleRegistration.Shared.Entities
+﻿using System.ComponentModel;
+
+namespace PeopleRegistration.Shared.Entities
 {
     public enum UserRole
     {
-        Admin = 0,
-        Regular = 1
+        [Description("Administrator")]
+        Admin,
+        [Description("Regular User")]
+        Regular
     }
 
     public enum Gender
     {
-        Male = 0,
-        Female = 1,
-        Other = 2
+        Male,
+        Female,
+        Other
     }
 }

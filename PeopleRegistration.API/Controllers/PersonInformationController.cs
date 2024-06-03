@@ -20,12 +20,11 @@ namespace PeopleRegistration.API.Controllers
             try
             {
                 var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-                var response = await personInformationService.GetAllPeopleInformationForUser(username);
+                var result = await personInformationService.GetAllPeopleInformationForUser(username);
 
-                /*if (!response.IsSuccess)
-                    return BadRequest(response.Message);
-                return response;*/
-                return null;
+                if (result is null)
+                    return BadRequest(result);
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -41,12 +40,11 @@ namespace PeopleRegistration.API.Controllers
             try
             {
                 var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-                var response = await personInformationService.GetSinglePersonInformationForUser(username);
+                var result = await personInformationService.GetSinglePersonInformationForUser(username);
 
-                /*if (!response.IsSuccess)
-                    return BadRequest(response.Message);
-                return response;*/
-                return null;
+                if (result is null)
+                    return BadRequest(result);
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -56,17 +54,27 @@ namespace PeopleRegistration.API.Controllers
         }
 
         [HttpPost("AddPersonInformationForUser")]
-        public async Task<ActionResult<PersonInformation>> AddPersonInformationForUser([FromQuery] UserDto request)
+        public async Task<ActionResult<PersonInformation>> AddPersonInformationForUser([FromQuery] PersonInformationDto request)
         {
             try
             {
-                var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-                var response = await personInformationService.AddPersonInformationForUser(username);
+                byte[] imageBytes = null;
+                string imageEncoding = null;
 
-                /*if (!response.IsSuccess)
-                    return BadRequest(response.Message);
-                return response;*/
-                return null;
+                if (request.ProfilePhoto is not null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    request.ProfilePhoto.CopyTo(memoryStream);
+                    imageBytes = memoryStream.ToArray();
+                    imageEncoding = request.ProfilePhoto.ContentType;
+                }
+
+                var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                var result = await personInformationService.AddPersonInformationForUser(username, request, imageBytes, imageEncoding);
+
+                if (result is null)
+                    return BadRequest(result);
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -81,11 +89,11 @@ namespace PeopleRegistration.API.Controllers
             try
             {
                 var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-                //var response = await personInformationService.UpdatePersonInformationForUser();
+                /*var result = await personInformationService.UpdatePersonInformationForUser();
 
-                /*if (!response.IsSuccess)
-                    return BadRequest(response.Message);
-                return response;*/
+                if (result is null)
+                    return BadRequest(result);
+                return Ok(result);*/
                 return null;
             }
             catch (Exception e)
@@ -101,11 +109,11 @@ namespace PeopleRegistration.API.Controllers
             try
             {
                 var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-                //var response = await personInformationService.DeletePersonInformationForUser();
+                /*var result = await personInformationService.DeletePersonInformationForUser();
 
-                /*if (!response.IsSuccess)
-                    return BadRequest(response.Message);
-                return response;*/
+                if (result is null)
+                    return BadRequest(result);
+                return Ok(result);*/
                 return null;
             }
             catch (Exception e)

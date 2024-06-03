@@ -72,6 +72,7 @@ namespace PeopleRegistration.API.Controllers
         }
 
         [HttpPost("ChangeRole")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public ActionResult<ResponseDto> ChangeRole([FromQuery] string username, [FromQuery] UserRole newRole)
         {

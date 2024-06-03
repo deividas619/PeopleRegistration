@@ -9,6 +9,6 @@
         public bool PasswordNeverExpires { get; set; }
         public UserRole Role { get; set; }
         public virtual ICollection<PersonInformation> PersonInformation { get; set; } = new List<PersonInformation>();
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }

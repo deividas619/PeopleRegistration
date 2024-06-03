@@ -1,4 +1,6 @@
-﻿namespace PeopleRegistration.Shared.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PeopleRegistration.Shared.Entities
 {
     public class Login
     {
