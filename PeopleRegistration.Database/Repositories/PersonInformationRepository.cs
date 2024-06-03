@@ -24,7 +24,7 @@ namespace PeopleRegistration.Database.Repositories
         {
             try
             {
-
+                return null;
             }
             catch (Exception e)
             {
@@ -37,7 +37,7 @@ namespace PeopleRegistration.Database.Repositories
         {
             try
             {
-
+                return null;
             }
             catch (Exception e)
             {
@@ -50,7 +50,7 @@ namespace PeopleRegistration.Database.Repositories
         {
             try
             {
-
+                return null;
             }
             catch (Exception e)
             {
@@ -63,7 +63,7 @@ namespace PeopleRegistration.Database.Repositories
         {
             try
             {
-
+                return null;
             }
             catch (Exception e)
             {

@@ -23,7 +23,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return Ok(response);
             }
             catch (Exception e)
             {
@@ -34,16 +34,15 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpPost("Login")]
         [AllowAnonymous]
-        public ActionResult<ResponseDto> Login(string username, string password)
+        public ActionResult<ResponseDto> Login([FromQuery] Login request)
         {
             try
             {
-                var response = userService.Login(username, password);
+                var response = userService.Login(request.Username, request.Password);
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
-
-                return Ok(jwtService.GetJwtToken(username, response.Role));
+                return Ok(jwtService.GetJwtToken(request.Username, response.Role));
             }
             catch (Exception e)
             {
@@ -63,7 +62,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return Ok(response);
             }
             catch (Exception e)
             {
@@ -82,7 +81,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return Ok(response);
             }
             catch (Exception e)
             {
@@ -101,7 +100,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return Ok(response);
             }
             catch (Exception e)
             {
@@ -117,12 +116,11 @@ namespace PeopleRegistration.API.Controllers
             try
             {
                 var loggedInUsername = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-
                 var response = userService.ChangeUserActiveStatus(username, loggedInUsername);
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return Ok(response);
             }
             catch (Exception e)
             {
@@ -138,12 +136,11 @@ namespace PeopleRegistration.API.Controllers
             try
             {
                 var loggedInUsername = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-
                 var response = userService.DeleteUser(username, loggedInUsername);
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return Ok(response);
             }
             catch (Exception e)
             {

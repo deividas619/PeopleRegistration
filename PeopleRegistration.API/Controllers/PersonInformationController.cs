@@ -22,9 +22,10 @@ namespace PeopleRegistration.API.Controllers
                 var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 var response = await personInformationService.GetAllPeopleInformationForUser(username);
 
-                if (!response.IsSuccess)
+                /*if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return response;*/
+                return null;
             }
             catch (Exception e)
             {
@@ -42,9 +43,10 @@ namespace PeopleRegistration.API.Controllers
                 var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 var response = await personInformationService.GetSinglePersonInformationForUser(username);
 
-                if (!response.IsSuccess)
+                /*if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return response;*/
+                return null;
             }
             catch (Exception e)
             {
@@ -58,11 +60,13 @@ namespace PeopleRegistration.API.Controllers
         {
             try
             {
+                var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 var response = await personInformationService.AddPersonInformationForUser(username);
 
-                if (!response.IsSuccess)
+                /*if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return response;*/
+                return null;
             }
             catch (Exception e)
             {
@@ -77,11 +81,12 @@ namespace PeopleRegistration.API.Controllers
             try
             {
                 var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-                var response = await personInformationService.UpdatePersonInformationForUser();
+                //var response = await personInformationService.UpdatePersonInformationForUser();
 
-                if (!response.IsSuccess)
+                /*if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return response;*/
+                return null;
             }
             catch (Exception e)
             {
@@ -96,11 +101,12 @@ namespace PeopleRegistration.API.Controllers
             try
             {
                 var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-                var response = await personInformationService.DeletePersonInformationForUser();
+                //var response = await personInformationService.DeletePersonInformationForUser();
 
-                if (!response.IsSuccess)
+                /*if (!response.IsSuccess)
                     return BadRequest(response.Message);
-                return response;
+                return response;*/
+                return null;
             }
             catch (Exception e)
             {
