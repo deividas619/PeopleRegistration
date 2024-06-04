@@ -5,6 +5,7 @@ using PeopleRegistration.Shared.Entities;
 using Serilog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using System.Net;
 
 namespace PeopleRegistration.BusinessLogic.Services
 {
@@ -22,16 +23,29 @@ namespace PeopleRegistration.BusinessLogic.Services
                 throw;
             }
         }
-
-        public async Task<PersonInformation> GetSinglePersonInformationForUser(string username)
+        
+        public async Task<PersonInformation> GetSinglePersonInformationForUserByPersonalCode(string username, string personalCode)
         {
             try
             {
-                return await personInformationRepository.GetSinglePersonInformationForUser(username);
+                return await personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personalCode);
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(GetSinglePersonInformationForUser)}]: {e.Message}");
+                Log.Error($"[{nameof(PersonInformationService)}.{nameof(GetSinglePersonInformationForUserByPersonalCode)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        public async Task<PersonInformation> GetSinglePersonInformationForUserByObjectId(string username, Guid id)
+        {
+            try
+            {
+                return await personInformationRepository.GetSinglePersonInformationForUserByObjectId(username, id);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationService)}.{nameof(GetSinglePersonInformationForUserByObjectId)}]: {e.Message}");
                 throw;
             }
         }
@@ -64,28 +78,52 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
         }
 
-        public async Task<PersonInformation> UpdatePersonInformationForUser(string username)
+        public async Task<PersonInformation> UpdatePersonInformationForUserByPersonalCode(string username, string personalCode, PersonInformationDto request)
         {
             try
             {
-                return await personInformationRepository.UpdatePersonInformationForUser(username);
+                var existingPersonInformation = await personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personalCode);
+
+                if (existingPersonInformation == null)
+                    //return new ResponseDto(false, "Not found!");
+                    return null;
+
+                if (existingPersonInformation is not null)
+                {
+
+
+                    return await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(personalCode, newRequest);
+                }
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(UpdatePersonInformationForUser)}]: {e.Message}");
+                Log.Error($"[{nameof(PersonInformationService)}.{nameof(UpdatePersonInformationForUserByPersonalCode)}]: {e.Message}");
                 throw;
             }
         }
 
-        public async Task<PersonInformation> DeletePersonInformationForUser(string username)
+        public async Task<PersonInformation> DeletePersonInformationForUserByPersonalCode(string username, string personalCode)
         {
             try
             {
-                return await personInformationRepository.DeletePersonInformationForUser(username);
+                return await personInformationRepository.DeletePersonInformationForUserByPersonalCode(username, personalCode);
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(DeletePersonInformationForUser)}]: {e.Message}");
+                Log.Error($"[{nameof(PersonInformationService)}.{nameof(DeletePersonInformationForUserByPersonalCode)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        public async Task<PersonInformation> DeletePersonInformationForUserByObjectId(string username, Guid id)
+        {
+            try
+            {
+                return await personInformationRepository.DeletePersonInformationForUserByObjectId(username, id);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationService)}.{nameof(DeletePersonInformationForUserByObjectId)}]: {e.Message}");
                 throw;
             }
         }
@@ -98,8 +136,8 @@ namespace PeopleRegistration.BusinessLogic.Services
                 {
                     using (var image = Image.Load(imageBytes))
                     {
-                        int newWidth = 75;
-                        int newHeight = 75;
+                        int newWidth = 200;
+                        int newHeight = 200;
 
                         image.Mutate(i => i.Resize(newWidth, newHeight));
 
@@ -120,7 +158,7 @@ namespace PeopleRegistration.BusinessLogic.Services
                                     image.SaveAsGifAsync(resizedStream);
                                     break;
                                 default:
-                                    throw new NotSupportedException("Unsupported image format.");
+                                    throw new NotSupportedException("Unsupported image format!");
                             }
 
                             return resizedStream.ToArray();

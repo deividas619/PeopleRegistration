@@ -6,9 +6,12 @@ namespace PeopleRegistration.BusinessLogic.Interfaces
     public interface IPersonInformationService
     {
         Task<IEnumerable<PersonInformation>> GetAllPeopleInformationForUser(string username);
-        Task<PersonInformation> GetSinglePersonInformationForUser(string username);
+        Task<PersonInformation> GetSinglePersonInformationForUserByPersonalCode(string username, string personalCode);
+        Task<PersonInformation> GetSinglePersonInformationForUserByObjectId(string username, Guid id);
         Task<PersonInformation> AddPersonInformationForUser(string username, PersonInformationDto personInformation, byte[] imageBytes, string imageEncoding);
-        Task<PersonInformation> UpdatePersonInformationForUser(string username);
-        Task<PersonInformation> DeletePersonInformationForUser(string username);
+        Task<PersonInformation> UpdatePersonInformationForUserByPersonalCode(string username, string personalCode, PersonInformationDto request);
+        Task<PersonInformation> UpdatePersonInformationForUserByObjectId(string username, string personalCode, Guid id);
+        Task<PersonInformation> DeletePersonInformationForUserByPersonalCode(string username, string personalCode);
+        Task<PersonInformation> DeletePersonInformationForUserByObjectId(string username, Guid id);
     }
 }
