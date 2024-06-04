@@ -5,7 +5,6 @@ using PeopleRegistration.Shared.DTOs;
 using Serilog;
 using System.Security.Claims;
 using PeopleRegistration.Shared.Attributes;
-using PeopleRegistration.Shared.Entities;
 
 namespace PeopleRegistration.API.Controllers
 {
@@ -16,7 +15,7 @@ namespace PeopleRegistration.API.Controllers
     {
         [HttpGet("GetAllPeopleInformationForUser")]
         [ResponseCache(Duration = 60)]
-        public async Task<ActionResult<IEnumerable<PersonInformation>>> GetAllPeopleInformationForUser()
+        public async Task<ActionResult<IEnumerable<PersonInformationDto>>> GetAllPeopleInformationForUser()
         {
             try
             {
@@ -36,7 +35,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpGet("GetSinglePersonInformationForUserByPersonalCode")]
         [ResponseCache(Duration = 30)]
-        public async Task<ActionResult<PersonInformation>> GetSinglePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
+        public async Task<ActionResult<PersonInformationDto>> GetSinglePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
         {
             try
             {
@@ -56,7 +55,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpGet("GetSinglePersonInformationForUserByObjectId")]
         [ResponseCache(Duration = 30)]
-        public async Task<ActionResult<PersonInformation>> GetSinglePersonInformationForUserByObjectId([FromQuery] Guid id)
+        public async Task<ActionResult<PersonInformationDto>> GetSinglePersonInformationForUserByObjectId([FromQuery] Guid id)
         {
             try
             {
@@ -74,8 +73,28 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
+        [ResponseCache(Duration = 300)]
+        [HttpPost("GetPersonInformationPhotoByPersonalCode")]
+        public async Task<ActionResult<PersonInformationDto>> GetPersonInformationPhotoByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
+        {
+            try
+            {
+                var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                var (result, type) = await personInformationService.GetPersonInformationPhotoByPersonalCode(username, personalCode);
+
+                if (result is null)
+                    return BadRequest(result);
+                return File(result, type);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationController)}.{nameof(GetPersonInformationPhotoByPersonalCode)}]: {e.Message}");
+                throw;
+            }
+        }
+
         [HttpPost("AddPersonInformationForUser")]
-        public async Task<ActionResult<PersonInformation>> AddPersonInformationForUser([FromQuery] PersonInformationDto request)
+        public async Task<ActionResult<PersonInformationDto>> AddPersonInformationForUser([FromForm] PersonInformationDto request)
         {
             try
             {
@@ -105,7 +124,7 @@ namespace PeopleRegistration.API.Controllers
         }
 
         [HttpPost("UpdatePersonInformationForUserByPersonalCode")]
-        public async Task<ActionResult<PersonInformation>> UpdatePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode, [FromQuery] PersonInformationDto request)
+        public async Task<ActionResult<PersonInformationDto>> UpdatePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode, [FromForm] PersonInformationDto request)
         {
             try
             {
@@ -123,8 +142,27 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
+        [HttpPost("UpdatePersonInformationForUserByObjectId")]
+        public async Task<ActionResult<PersonInformationDto>> UpdatePersonInformationForUserByObjectId([FromQuery] Guid id, [FromForm] PersonInformationDto request)
+        {
+            try
+            {
+                var username = HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                var result = await personInformationService.UpdatePersonInformationForUserByObjectId(username, id, request);
+
+                if (result is null)
+                    return BadRequest(result);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationController)}.{nameof(UpdatePersonInformationForUserByObjectId)}]: {e.Message}");
+                throw;
+            }
+        }
+
         [HttpPost("DeletePersonInformationForUserPersonalCode")]
-        public async Task<ActionResult<PersonInformation>> DeletePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
+        public async Task<ActionResult<PersonInformationDto>> DeletePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
         {
             try
             {
@@ -143,7 +181,7 @@ namespace PeopleRegistration.API.Controllers
         }
 
         [HttpPost("DeletePersonInformationForUserByObjectId")]
-        public async Task<ActionResult<PersonInformation>> DeletePersonInformationForUserByObjectId([FromQuery] Guid id)
+        public async Task<ActionResult<PersonInformationDto>> DeletePersonInformationForUserByObjectId([FromQuery] Guid id)
         {
             try
             {

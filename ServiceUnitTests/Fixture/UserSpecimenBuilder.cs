@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using AutoFixture.Kernel;
 using PeopleRegistration.Shared.Entities;
+using PeopleRegistration.Shared.Enums;
 using Serilog;
 
 namespace BusinessLogicUnitTests.Fixture

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PeopleRegistration.BusinessLogic.Interfaces;
 using PeopleRegistration.Shared.Attributes;
 using PeopleRegistration.Shared.DTOs;
-using PeopleRegistration.Shared.Entities;
+using PeopleRegistration.Shared.Enums;
 using Serilog;
 
 namespace PeopleRegistration.API.Controllers
@@ -34,7 +34,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpPost("Login")]
         [AllowAnonymous]
-        public ActionResult<ResponseDto> Login([FromQuery] Login request)
+        public ActionResult<ResponseDto> Login([FromQuery] LoginDto request)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpPost("ChangePassword")]
         [Authorize]
-        public ActionResult<ResponseDto> ChangePassword([FromQuery] ChangePassword request)
+        public ActionResult<ResponseDto> ChangePassword([FromQuery] ChangePasswordDto request)
         {
             try
             {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PeopleRegistration.Database.Interfaces;
-using PeopleRegistration.Shared.DTOs;
 using PeopleRegistration.Shared.Entities;
 using Serilog;
 
@@ -25,7 +24,7 @@ namespace PeopleRegistration.Database.Repositories
         {
             try
             {
-                return await context.PeopleInformation.Include(pi => pi.ResidencePlace).Where(pi => pi.User.Username == username).FirstOrDefaultAsync();
+                return await context.PeopleInformation.Include(pi => pi.ResidencePlace).Where(pi => pi.User.Username == username && pi.PersonalCode == personalCode).FirstOrDefaultAsync();
             }
             catch (Exception e)
             {
@@ -64,11 +63,15 @@ namespace PeopleRegistration.Database.Repositories
             }
         }
 
-        public async Task<PersonInformation> UpdatePersonInformationForUserByPersonalCode(string personalCode, PersonInformation request)
+        public async Task<PersonInformation> UpdatePersonInformationForUserByPersonalCode(PersonInformation request)
         {
             try
             {
-                return null;
+                context.Update(request);
+                await context.SaveChangesAsync();
+
+                Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(UpdatePersonInformationForUserByPersonalCode)}]: Successfully updated Person Information by Personal Code: {request.PersonalCode}");
+                return request;
             }
             catch (Exception e)
             {
@@ -77,11 +80,28 @@ namespace PeopleRegistration.Database.Repositories
             }
         }
 
+        public async Task<PersonInformation> UpdatePersonInformationForUserByObjectId(PersonInformation request)
+        {
+            try
+            {
+                context.Update(request);
+                await context.SaveChangesAsync();
+
+                Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(UpdatePersonInformationForUserByObjectId)}]: Successfully updated Person Information by Object Id: {request.Id}");
+                return request;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationRepository)}.{nameof(UpdatePersonInformationForUserByObjectId)}]: {e.Message}");
+                throw;
+            }
+        }
+
         public async Task<PersonInformation> DeletePersonInformationForUserByPersonalCode(string username, string personalCode)
         {
             try
             {
-                var personInformationToRemove = await context.PeopleInformation.Include(pi => pi.ResidencePlace).FirstOrDefaultAsync(pi => pi.PersonalCode == personalCode);
+                var personInformationToRemove = await context.PeopleInformation.Include(pi => pi.ResidencePlace).FirstOrDefaultAsync(pi => pi.PersonalCode == personalCode && pi.User.Username == username);
 
                 context.PeopleInformation.Remove(personInformationToRemove);
                 await context.SaveChangesAsync();
@@ -100,7 +120,7 @@ namespace PeopleRegistration.Database.Repositories
         {
             try
             {
-                var personInformationToRemove = await context.PeopleInformation.Include(pi => pi.ResidencePlace).FirstOrDefaultAsync(pi => pi.Id == id);
+                var personInformationToRemove = await context.PeopleInformation.Include(pi => pi.ResidencePlace).FirstOrDefaultAsync(pi => pi.Id == id && pi.User.Username == username);
 
                 context.PeopleInformation.Remove(personInformationToRemove);
                 await context.SaveChangesAsync();

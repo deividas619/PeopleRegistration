@@ -4,9 +4,9 @@ using Moq;
 using PeopleRegistration.Shared.DTOs;
 using PeopleRegistration.API.Controllers;
 using PeopleRegistration.BusinessLogic.Interfaces;
-using PeopleRegistration.Shared.Entities;
 using Microsoft.AspNetCore.Http;
 using ControllerUnitTests.Fixture;
+using PeopleRegistration.Shared.Enums;
 
 namespace ControllerUnitTests
 {
@@ -69,7 +69,7 @@ namespace ControllerUnitTests
 
         [Theory]
         [UserControllerTestsFixture]
-        public void Login_ReturnsBadRequest_WhenUserDoesNotExist(Login testUser)
+        public void Login_ReturnsBadRequest_WhenUserDoesNotExist(LoginDto testUser)
         {
             // Arrange
             ResponseDto response = new ResponseDto(false, "User does not exist");
@@ -85,7 +85,7 @@ namespace ControllerUnitTests
 
         [Theory]
         [UserControllerTestsFixture]
-        public void Login_ReturnsBadRequest_WhenPasswordIsEmpty(Login testUser)
+        public void Login_ReturnsBadRequest_WhenPasswordIsEmpty(LoginDto testUser)
         {
             // Arrange
             testUser.Password = "";
@@ -105,7 +105,7 @@ namespace ControllerUnitTests
 
         [Theory]
         [UserControllerTestsFixture]
-        public void Login_ReturnsBadRequest_WhenPasswordIsIncorrect(Login testUser)
+        public void Login_ReturnsBadRequest_WhenPasswordIsIncorrect(LoginDto testUser)
         {
             // Arrange
             ResponseDto response = new ResponseDto(false, "Password is incorrect!");
@@ -121,7 +121,7 @@ namespace ControllerUnitTests
 
         [Theory]
         [UserControllerTestsFixture]
-        public void Login_ReturnsJwtToken_WhenSuccessful(Login testUser)
+        public void Login_ReturnsJwtToken_WhenSuccessful(LoginDto testUser)
         {
             // Arrange
             ResponseDto userServiceResponse = new ResponseDto(true, "User logged in!", UserRole.Regular);
@@ -139,7 +139,7 @@ namespace ControllerUnitTests
 
         [Theory]
         [UserControllerTestsFixture]
-        public void Login_ThrowsException_WhenErrorOccurs(Login testUser)
+        public void Login_ThrowsException_WhenErrorOccurs(LoginDto testUser)
         {
             // Arrange
             _mockUserService.Setup(s => s.Login(testUser.Username, testUser.Password)).Throws(new Exception("DB Connection Error"));
@@ -165,7 +165,7 @@ namespace ControllerUnitTests
                 HttpContext = new DefaultHttpContext() { User = user }
             };
 
-            ChangePassword request = new ChangePassword { OldPassword = "OLD_P@55w#rD!!", NewPassword = "P@55w#rD!!", NewPasswordAgain = "DIFFERENT_P@55w#rD!!" };
+            ChangePasswordDto request = new ChangePasswordDto { OldPassword = "OLD_P@55w#rD!!", NewPassword = "P@55w#rD!!", NewPasswordAgain = "DIFFERENT_P@55w#rD!!" };
             ResponseDto response = new ResponseDto(false, "Old password is incorrect!");
             _mockUserService.Setup(s => s.ChangeUserPassword(username, request.OldPassword, request.NewPassword, request.NewPasswordAgain)).Returns(response);
 
@@ -193,7 +193,7 @@ namespace ControllerUnitTests
                 HttpContext = new DefaultHttpContext() { User = user }
             };
 
-            ChangePassword request = new ChangePassword { OldPassword = "OLD_P@55w#rD!!", NewPassword = "NEW_P@55w#rD!!", NewPasswordAgain = "DIFFERENT_NEW_P@55w#rD!!" };
+            ChangePasswordDto request = new ChangePasswordDto { OldPassword = "OLD_P@55w#rD!!", NewPassword = "NEW_P@55w#rD!!", NewPasswordAgain = "DIFFERENT_NEW_P@55w#rD!!" };
             ResponseDto response = new ResponseDto(false, "New passwords do not match!");
             _mockUserService.Setup(s => s.ChangeUserPassword(username, request.OldPassword, request.NewPassword, request.NewPasswordAgain)).Returns(response);
 
@@ -221,7 +221,7 @@ namespace ControllerUnitTests
                 HttpContext = new DefaultHttpContext() { User = user }
             };
 
-            ChangePassword request = new ChangePassword { OldPassword = "OLD_P@55w#rD!!", NewPassword = "NEW_P@55w#rD!!", NewPasswordAgain = "NEW_P@55w#rD!!" };
+            ChangePasswordDto request = new ChangePasswordDto { OldPassword = "OLD_P@55w#rD!!", NewPassword = "NEW_P@55w#rD!!", NewPasswordAgain = "NEW_P@55w#rD!!" };
             ResponseDto response = new ResponseDto(true, "Password updated!");
             _mockUserService.Setup(s => s.ChangeUserPassword(username, request.OldPassword, request.NewPassword, request.NewPasswordAgain)).Returns(response);
 
@@ -511,5 +511,18 @@ namespace ControllerUnitTests
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             Assert.Equal(response.Message, badRequestResult.Value);
         }
+
+        /*[Fact]
+        public void test() //https://stackoverflow.com/questions/52842294/how-do-i-unit-test-model-validation-in-controllers-decorated-with-apicontroller
+        {
+            // Arrange
+            var obj = new UserDto
+            {
+
+            };
+            var context = new ValidationContext(obj);
+            var results = new List<ValidationResult>();
+            var valid = Validator.TryValidateObject(obj, context, results, true);
+        }*/
     }
 }

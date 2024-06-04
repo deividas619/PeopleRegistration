@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace PeopleRegistration.Shared.Entities
+namespace PeopleRegistration.Shared.Enums
 {
     public enum UserRole
     {

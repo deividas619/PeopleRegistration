@@ -3,7 +3,7 @@ using PeopleRegistration.BusinessLogic.Interfaces;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using PeopleRegistration.Shared.Entities;
+using PeopleRegistration.Shared.Enums;
 
 namespace PeopleRegistration.BusinessLogic.Services
 {

@@ -1,4 +1,4 @@
-﻿using PeopleRegistration.Shared.Entities;
+﻿using PeopleRegistration.Shared.Enums;
 using System.Text.Json.Serialization;
 
 namespace PeopleRegistration.Shared.DTOs

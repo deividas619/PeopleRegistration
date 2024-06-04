@@ -3,6 +3,7 @@ using PeopleRegistration.BusinessLogic.Interfaces;
 using PeopleRegistration.Database.Interfaces;
 using PeopleRegistration.Shared.DTOs;
 using PeopleRegistration.Shared.Entities;
+using PeopleRegistration.Shared.Enums;
 using Serilog;
 
 namespace PeopleRegistration.BusinessLogic.Services
@@ -194,7 +195,6 @@ namespace PeopleRegistration.BusinessLogic.Services
 
                 var user = new User
                 {
-                    Id = Guid.NewGuid(),
                     Username = username,
                     Password = passwordHash,
                     PasswordSalt = passwordSalt,

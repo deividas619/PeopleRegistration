@@ -1,17 +1,17 @@
 ﻿using PeopleRegistration.Shared.DTOs;
-using PeopleRegistration.Shared.Entities;
 
 namespace PeopleRegistration.BusinessLogic.Interfaces
 {
     public interface IPersonInformationService
     {
-        Task<IEnumerable<PersonInformation>> GetAllPeopleInformationForUser(string username);
-        Task<PersonInformation> GetSinglePersonInformationForUserByPersonalCode(string username, string personalCode);
-        Task<PersonInformation> GetSinglePersonInformationForUserByObjectId(string username, Guid id);
-        Task<PersonInformation> AddPersonInformationForUser(string username, PersonInformationDto personInformation, byte[] imageBytes, string imageEncoding);
-        Task<PersonInformation> UpdatePersonInformationForUserByPersonalCode(string username, string personalCode, PersonInformationDto request);
-        Task<PersonInformation> UpdatePersonInformationForUserByObjectId(string username, string personalCode, Guid id);
-        Task<PersonInformation> DeletePersonInformationForUserByPersonalCode(string username, string personalCode);
-        Task<PersonInformation> DeletePersonInformationForUserByObjectId(string username, Guid id);
+        Task<IEnumerable<PersonInformationDto>> GetAllPeopleInformationForUser(string username);
+        Task<PersonInformationDto> GetSinglePersonInformationForUserByPersonalCode(string username, string personalCode);
+        Task<PersonInformationDto> GetSinglePersonInformationForUserByObjectId(string username, Guid id);
+        Task<(byte[], string)> GetPersonInformationPhotoByPersonalCode(string username, string personalCode);
+        Task<PersonInformationDto> AddPersonInformationForUser(string username, PersonInformationDto personInformation, byte[] imageBytes, string imageEncoding);
+        Task<PersonInformationDto> UpdatePersonInformationForUserByPersonalCode(string username, string personalCode, PersonInformationDto request);
+        Task<PersonInformationDto> UpdatePersonInformationForUserByObjectId(string username, Guid id, PersonInformationDto request);
+        Task<PersonInformationDto> DeletePersonInformationForUserByPersonalCode(string username, string personalCode);
+        Task<PersonInformationDto> DeletePersonInformationForUserByObjectId(string username, Guid id);
     }
 }

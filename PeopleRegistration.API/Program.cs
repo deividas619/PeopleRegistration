@@ -9,12 +9,9 @@ using PeopleRegistration.BusinessLogic.Services;
 using PeopleRegistration.Database;
 using Serilog;
 
-//smaller responses from controller instead of full object use dto
-//force to change the password if it's older than 90 days
 //add [ProducesResponseType(http_code)] to controllers
-//add fixture and specimen for tests
 //create custom exceptions instead of note/category object guid id error code
-//add remove image method
+//add and remove image methods
 //check PersonInformation email uniqueness in the service
 
 namespace PeopleRegistration.API

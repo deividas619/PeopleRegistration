@@ -9,6 +9,7 @@ namespace PeopleRegistration.BusinessLogic
         public static IServiceCollection AddBusinessLogic(this IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPersonInformationService, PersonInformationService>();
             services.AddTransient<IJwtService, JwtService>();
 
             return services;

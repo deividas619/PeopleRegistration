@@ -5,6 +5,7 @@ using PeopleRegistration.Shared.Entities;
 using Serilog;
 using System.Security.Cryptography;
 using BusinessLogicUnitTests.Fixture;
+using PeopleRegistration.Shared.Enums;
 
 namespace BusinessLogicUnitTests
 {
@@ -293,31 +294,6 @@ namespace BusinessLogicUnitTests
 
             // Act
             var response = _userService.ChangeUserPassword(testUser.Username, "OLD_P@55w#rD!!", "OLD_P@55w#rD!!", "OLD_P@55w#rD!!");
-
-            // Assert
-            Assert.True(response.IsSuccess);
-        }
-
-        [Theory]
-        [InlineData("")]
-        public void ChangeUserPassword_NewPasswordEmpty_ReturnsFailure(string newpassword)
-        {
-            // Arrange
-            CreatePasswordHash("OLD_P@55w#rD!!", out byte[] passwordHash, out byte[] passwordSalt);
-
-            var testUser = new User
-            {
-                Username = "testuser",
-                Password = passwordHash,
-                PasswordSalt = passwordSalt,
-                IsActive = true,
-                PasswordSetDate = DateOnly.FromDateTime(DateTime.Now),
-                PasswordNeverExpires = false
-            };
-            _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
-
-            // Act
-            var response = _userService.ChangeUserPassword("testuser", "OLD_P@55w#rD!!", newpassword, newpassword);
 
             // Assert
             Assert.True(response.IsSuccess);

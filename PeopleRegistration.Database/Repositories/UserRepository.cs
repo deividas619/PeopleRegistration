@@ -1,5 +1,6 @@
 ﻿using PeopleRegistration.Database.Interfaces;
 using PeopleRegistration.Shared.Entities;
+using PeopleRegistration.Shared.Enums;
 using Serilog;
 
 namespace PeopleRegistration.Database.Repositories

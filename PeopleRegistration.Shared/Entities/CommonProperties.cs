@@ -1,10 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PeopleRegistration.Shared.Entities
 {
     public class CommonProperties
     {
-        [DefaultValue(typeof(Guid), "00000000-0000-0000-0000-000000000000")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
     }
 }

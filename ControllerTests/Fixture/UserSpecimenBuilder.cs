@@ -1,6 +1,5 @@
 ﻿using AutoFixture.Kernel;
 using PeopleRegistration.Shared.DTOs;
-using PeopleRegistration.Shared.Entities;
 
 namespace ControllerUnitTests.Fixture
 {
@@ -17,9 +16,9 @@ namespace ControllerUnitTests.Fixture
                 };
             }
 
-            if (request is Type loginType && loginType == typeof(Login))
+            if (request is Type loginType && loginType == typeof(LoginDto))
             {
-                return new Login
+                return new LoginDto
                 {
                     Username = "testuser",
                     Password = "WRONG_P@55w#rD!!"

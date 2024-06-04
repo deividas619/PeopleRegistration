@@ -1,4 +1,5 @@
 ﻿using PeopleRegistration.Shared.Entities;
+using PeopleRegistration.Shared.Enums;
 
 namespace PeopleRegistration.Database.Interfaces
 {

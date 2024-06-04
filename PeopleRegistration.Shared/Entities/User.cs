@@ -1,4 +1,6 @@
-﻿namespace PeopleRegistration.Shared.Entities
+﻿using PeopleRegistration.Shared.Enums;
+
+namespace PeopleRegistration.Shared.Entities
 {
     public class User : CommonProperties
     {

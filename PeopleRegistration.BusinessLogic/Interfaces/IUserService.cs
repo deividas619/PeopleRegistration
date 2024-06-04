@@ -1,5 +1,5 @@
 ﻿using PeopleRegistration.Shared.DTOs;
-using PeopleRegistration.Shared.Entities;
+using PeopleRegistration.Shared.Enums;
 
 namespace PeopleRegistration.BusinessLogic.Interfaces
 {

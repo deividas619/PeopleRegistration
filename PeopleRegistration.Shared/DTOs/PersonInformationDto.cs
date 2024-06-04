@@ -1,26 +1,30 @@
 ﻿using Microsoft.AspNetCore.Http;
 using PeopleRegistration.Shared.Attributes;
-using PeopleRegistration.Shared.Entities;
+using PeopleRegistration.Shared.Enums;
+using System.Text.Json.Serialization;
 
 namespace PeopleRegistration.Shared.DTOs
 {
-    public class PersonInformationDto : CommonProperties
+    public class PersonInformationDto
     {
-        [NameLastnameValidation]
+        //[NameLastnameValidation]
         public string Name { get; set; }
-        [NameLastnameValidation]
+        //[NameLastnameValidation]
         public string LastName { get; set; }
         public Gender Gender { get; set; }
-        [DateOfBirthValidation]
+        //[DateOfBirthValidation]
         public DateOnly DateOfBirth { get; set; }
-        [PersonalCodeValidation]
+        //[PersonalCodeValidation]
         public string PersonalCode { get; set; }
-        [PhoneNumberValidation]
-        public string PhoneNumber { get; set; }
-        [EmailValidation]
-        public string Email { get; set; }
+        //[PhoneNumberValidation]
+        public string? PhoneNumber { get; set; }
+        //[EmailValidation]
+        public string? Email { get; set; }
+        [MaxFileSize(10 * 1024 * 1024)]
+        [AllowedExtensions([".png", ".jpg", ".jpeg", ".gif"])]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public IFormFile? ProfilePhoto { get; set; }
-        public virtual ResidencePlace? ResidencePlace { get; set; }
+        public virtual ResidencePlaceDto? ResidencePlace { get; set; }
         public PersonInformationDto() { }
     }
 }
