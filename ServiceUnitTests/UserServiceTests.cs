@@ -505,7 +505,7 @@ namespace BusinessLogicUnitTests
 
         [Theory]
         [UserFixture]
-        public void ChangeUserActiveStatus_UserExistsAndNotLoggedInUser_ChangesInactiveStatus(User testUser)
+        public void ChangeUserActiveStatus_UserExists_ChangesInactiveStatusToActive(User testUser)
         {
             // Arrange
             testUser.IsActive = false;
@@ -524,7 +524,7 @@ namespace BusinessLogicUnitTests
 
         [Theory]
         [UserFixture]
-        public void ChangeUserActiveStatus_UserExistsAndNotLoggedInUser_ChangesActiveStatus(User testUser)
+        public void ChangeUserActiveStatus_UserExists_ChangesActiveStatusToInactive(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);

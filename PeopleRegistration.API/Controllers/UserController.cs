@@ -91,7 +91,7 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
-        [HttpPost("GetUserActiveStatus")]
+        [HttpGet("GetUserActiveStatus")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public ActionResult<ResponseDto> GetUserActiveStatus([FromQuery] string username)
         {
@@ -130,7 +130,7 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
-        [HttpPost("DeleteUser")]
+        [HttpDelete("DeleteUser")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public ActionResult<ResponseDto> DeleteUser([FromQuery] string username)
         {

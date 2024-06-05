@@ -101,7 +101,7 @@ namespace PeopleRegistration.Database.Repositories
         {
             try
             {
-                var personInformationToRemove = await context.PeopleInformation.Include(pi => pi.ResidencePlace).FirstOrDefaultAsync(pi => pi.PersonalCode == personalCode && pi.User.Username == username);
+                var personInformationToRemove = await context.PeopleInformation.Include(pi => pi.ResidencePlace).FirstOrDefaultAsync(pi => pi.User.Username == username && pi.PersonalCode == personalCode);
 
                 context.PeopleInformation.Remove(personInformationToRemove);
                 await context.SaveChangesAsync();
@@ -120,7 +120,7 @@ namespace PeopleRegistration.Database.Repositories
         {
             try
             {
-                var personInformationToRemove = await context.PeopleInformation.Include(pi => pi.ResidencePlace).FirstOrDefaultAsync(pi => pi.Id == id && pi.User.Username == username);
+                var personInformationToRemove = await context.PeopleInformation.Include(pi => pi.ResidencePlace).FirstOrDefaultAsync(pi => pi.User.Username == username && pi.Id == id);
 
                 context.PeopleInformation.Remove(personInformationToRemove);
                 await context.SaveChangesAsync();

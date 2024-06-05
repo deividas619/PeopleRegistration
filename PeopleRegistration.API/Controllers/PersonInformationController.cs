@@ -74,7 +74,7 @@ namespace PeopleRegistration.API.Controllers
         }
 
         [ResponseCache(Duration = 300)]
-        [HttpPost("GetPersonInformationPhotoByPersonalCode")]
+        [HttpGet("GetPersonInformationPhotoByPersonalCode")]
         public async Task<ActionResult<PersonInformationDto>> GetPersonInformationPhotoByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
         {
             try
@@ -123,7 +123,7 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
-        [HttpPost("UpdatePersonInformationForUserByPersonalCode")]
+        [HttpPut("UpdatePersonInformationForUserByPersonalCode")]
         public async Task<ActionResult<PersonInformationDto>> UpdatePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode, [FromForm] PersonInformationDto request)
         {
             try
@@ -142,7 +142,7 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
-        [HttpPost("UpdatePersonInformationForUserByObjectId")]
+        [HttpPut("UpdatePersonInformationForUserByObjectId")]
         public async Task<ActionResult<PersonInformationDto>> UpdatePersonInformationForUserByObjectId([FromQuery] Guid id, [FromForm] PersonInformationDto request)
         {
             try
@@ -161,7 +161,7 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
-        [HttpPost("DeletePersonInformationForUserPersonalCode")]
+        [HttpDelete("DeletePersonInformationForUserPersonalCode")]
         public async Task<ActionResult<PersonInformationDto>> DeletePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
         {
             try
@@ -180,7 +180,7 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
-        [HttpPost("DeletePersonInformationForUserByObjectId")]
+        [HttpDelete("DeletePersonInformationForUserByObjectId")]
         public async Task<ActionResult<PersonInformationDto>> DeletePersonInformationForUserByObjectId([FromQuery] Guid id)
         {
             try
