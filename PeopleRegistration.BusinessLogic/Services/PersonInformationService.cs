@@ -15,7 +15,10 @@ namespace PeopleRegistration.BusinessLogic.Services
             try
             {
                 var repositoryOutput = await personInformationRepository.GetAllPeopleInformationForUser(username);
-                return repositoryOutput.Select(ConvertToDto).ToList();
+                if (repositoryOutput is not null)
+                    return repositoryOutput.Select(ConvertToDto).ToList();
+
+                return null;
             }
             catch (Exception e)
             {
@@ -29,25 +32,14 @@ namespace PeopleRegistration.BusinessLogic.Services
             try
             {
                 var repositoryOutput = await personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personalCode);
-                return ConvertToDto(repositoryOutput);
+                if (repositoryOutput is not null)
+                    return ConvertToDto(repositoryOutput);
+
+                return null;
             }
             catch (Exception e)
             {
                 Log.Error($"[{nameof(PersonInformationService)}.{nameof(GetSinglePersonInformationForUserByPersonalCode)}]: {e.Message}");
-                throw;
-            }
-        }
-
-        public async Task<PersonInformationDto> GetSinglePersonInformationForUserByObjectId(string username, Guid id)
-        {
-            try
-            {
-                var repositoryOutput = await personInformationRepository.GetSinglePersonInformationForUserByObjectId(username, id);
-                return ConvertToDto(repositoryOutput);
-            }
-            catch (Exception e)
-            {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(GetSinglePersonInformationForUserByObjectId)}]: {e.Message}");
                 throw;
             }
         }
@@ -58,7 +50,10 @@ namespace PeopleRegistration.BusinessLogic.Services
             {
                 var personInformation = await personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personalCode);
 
-                return (personInformation.ProfilePhoto, personInformation.ProfilePhotoEncoding);
+                if (personInformation is not null)
+                    return (personInformation.ProfilePhoto, personInformation.ProfilePhotoEncoding);
+                
+                return (null, null);
             }
             catch (Exception e)
             {
@@ -71,6 +66,11 @@ namespace PeopleRegistration.BusinessLogic.Services
         {
             try
             {
+                var existingPersonInformation = personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personInformation.PersonalCode);
+
+                if (existingPersonInformation is not null)
+                    return null; // return that personinformation with this personal code already exists for this user
+
                 await personInformationRepository.AddPersonInformationForUser(new PersonInformation
                 {
                     Name = personInformation.Name,
@@ -85,10 +85,10 @@ namespace PeopleRegistration.BusinessLogic.Services
                     User = userRepository.GetUser(username),
                     ResidencePlace = new ResidencePlace
                     {
-                        City = personInformation.ResidencePlace.City,
-                        Street = personInformation.ResidencePlace.Street,
-                        HouseNumber = personInformation.ResidencePlace.HouseNumber,
-                        ApartmentNumber = personInformation.ResidencePlace.ApartmentNumber
+                        City = personInformation.ResidencePlace.City != null && personInformation.ResidencePlace.City != "string" ? personInformation.ResidencePlace.City : null,
+                        Street = personInformation.ResidencePlace.Street != null && personInformation.ResidencePlace.Street != "string" ? personInformation.ResidencePlace.Street : null,
+                        HouseNumber = personInformation.ResidencePlace.HouseNumber != null && personInformation.ResidencePlace.HouseNumber != "string" ? personInformation.ResidencePlace.HouseNumber : null,
+                        ApartmentNumber = personInformation.ResidencePlace.ApartmentNumber != null && personInformation.ResidencePlace.ApartmentNumber != "string" ? personInformation.ResidencePlace.ApartmentNumber : null
                     }
                 });
 
@@ -101,7 +101,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
         }
 
-        public async Task<PersonInformationDto> UpdatePersonInformationForUserByPersonalCode(string username, string personalCode, PersonInformationDto request)
+        public async Task<PersonInformationDto> UpdatePersonInformationForUserByPersonalCode(string username, string personalCode, PersonInformationDto request, byte[] imageBytes, string imageEncoding)
         {
             try
             {
@@ -111,10 +111,16 @@ namespace PeopleRegistration.BusinessLogic.Services
                 {
                     existingPersonInformation.Name = request.Name;
 
-                    //return await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(newRequest);
+                    if (imageBytes is not null)
+                    {
+                        existingPersonInformation.ProfilePhoto = imageBytes;
+                        existingPersonInformation.ProfilePhotoEncoding = imageEncoding;
+                    }
+
+                    //return await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(existingPersonInformation);
                 }
 
-                return request;
+                return null; // return that personinformation with this personal code does not exist for this user
             }
             catch (Exception e)
             {
@@ -123,52 +129,20 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
         }
 
-        public async Task<PersonInformationDto> UpdatePersonInformationForUserByObjectId(string username, Guid id, PersonInformationDto request)
-        {
-            try
-            {
-                var existingPersonInformation = await personInformationRepository.GetSinglePersonInformationForUserByObjectId(username, id);
-
-                if (existingPersonInformation is not null)
-                {
-                    existingPersonInformation.Name = request.Name;
-
-                    //return await personInformationRepository.UpdatePersonInformationForUserByObjectId(newRequest);
-                }
-
-                return null;
-            }
-            catch (Exception e)
-            {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(UpdatePersonInformationForUserByObjectId)}]: {e.Message}");
-                throw;
-            }
-        }
-
         public async Task<PersonInformationDto> DeletePersonInformationForUserByPersonalCode(string username, string personalCode)
         {
             try
             {
-                var repositoryOutput = await personInformationRepository.DeletePersonInformationForUserByPersonalCode(username, personalCode);
-                return ConvertToDto(repositoryOutput);
+                var existingPersonInformation = await personInformationRepository.DeletePersonInformationForUserByPersonalCode(username, personalCode);
+
+                if (existingPersonInformation is not null)
+                    return ConvertToDto(existingPersonInformation);
+
+                return null; // return that personinformation with this personal code does not exist for this user
             }
             catch (Exception e)
             {
                 Log.Error($"[{nameof(PersonInformationService)}.{nameof(DeletePersonInformationForUserByPersonalCode)}]: {e.Message}");
-                throw;
-            }
-        }
-
-        public async Task<PersonInformationDto> DeletePersonInformationForUserByObjectId(string username, Guid id)
-        {
-            try
-            {
-                var repositoryOutput = await personInformationRepository.DeletePersonInformationForUserByObjectId(username, id);
-                return ConvertToDto(repositoryOutput);
-            }
-            catch (Exception e)
-            {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(DeletePersonInformationForUserByObjectId)}]: {e.Message}");
                 throw;
             }
         }

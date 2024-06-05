@@ -24,7 +24,7 @@ namespace PeopleRegistration.Shared.DTOs
         [AllowedExtensions([".png", ".jpg", ".jpeg", ".gif"])]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public IFormFile? ProfilePhoto { get; set; }
-        public virtual ResidencePlaceDto? ResidencePlace { get; set; }
+        public ResidencePlaceDto? ResidencePlace { get; set; }
         public PersonInformationDto() { }
     }
 }

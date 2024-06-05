@@ -33,19 +33,6 @@ namespace PeopleRegistration.Database.Repositories
             }
         }
 
-        public async Task<PersonInformation> GetSinglePersonInformationForUserByObjectId(string username, Guid id)
-        {
-            try
-            {
-                return await context.PeopleInformation.Include(pi => pi.ResidencePlace).Where(pi => pi.User.Username == username && pi.Id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception e)
-            {
-                Log.Error($"[{nameof(PersonInformationRepository)}.{nameof(GetSinglePersonInformationForUserByObjectId)}]: {e.Message}");
-                throw;
-            }
-        }
-
         public async Task<PersonInformation> AddPersonInformationForUser(PersonInformation personInformation)
         {
             try
@@ -53,7 +40,7 @@ namespace PeopleRegistration.Database.Repositories
                 context.PeopleInformation.Add(personInformation);
                 await context.SaveChangesAsync();
 
-                Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(AddPersonInformationForUser)}]: Successfully added Person Information: {personInformation.Id}");
+                Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(AddPersonInformationForUser)}]: Successfully added Person Information: '{personInformation.Id}'");
                 return personInformation;
             }
             catch (Exception e)
@@ -70,29 +57,12 @@ namespace PeopleRegistration.Database.Repositories
                 context.Update(request);
                 await context.SaveChangesAsync();
 
-                Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(UpdatePersonInformationForUserByPersonalCode)}]: Successfully updated Person Information by Personal Code: {request.PersonalCode}");
+                Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(UpdatePersonInformationForUserByPersonalCode)}]: Successfully updated Person Information by Personal Code: '{request.PersonalCode}'");
                 return request;
             }
             catch (Exception e)
             {
                 Log.Error($"[{nameof(PersonInformationRepository)}.{nameof(UpdatePersonInformationForUserByPersonalCode)}]: {e.Message}");
-                throw;
-            }
-        }
-
-        public async Task<PersonInformation> UpdatePersonInformationForUserByObjectId(PersonInformation request)
-        {
-            try
-            {
-                context.Update(request);
-                await context.SaveChangesAsync();
-
-                Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(UpdatePersonInformationForUserByObjectId)}]: Successfully updated Person Information by Object Id: {request.Id}");
-                return request;
-            }
-            catch (Exception e)
-            {
-                Log.Error($"[{nameof(PersonInformationRepository)}.{nameof(UpdatePersonInformationForUserByObjectId)}]: {e.Message}");
                 throw;
             }
         }
@@ -103,34 +73,20 @@ namespace PeopleRegistration.Database.Repositories
             {
                 var personInformationToRemove = await context.PeopleInformation.Include(pi => pi.ResidencePlace).FirstOrDefaultAsync(pi => pi.User.Username == username && pi.PersonalCode == personalCode);
 
-                context.PeopleInformation.Remove(personInformationToRemove);
-                await context.SaveChangesAsync();
+                if (personInformationToRemove is not null)
+                {
+                    context.ResidencePlaces.Remove(personInformationToRemove.ResidencePlace);
+                    context.PeopleInformation.Remove(personInformationToRemove);
+                    await context.SaveChangesAsync();
 
-                Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(DeletePersonInformationForUserByPersonalCode)}]: Successfully removed Person Information by Personal Code: {personInformationToRemove.PersonalCode}");
+                    Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(DeletePersonInformationForUserByPersonalCode)}]: Successfully removed Person Information by Personal Code: '{personInformationToRemove.PersonalCode}'");
+                }
+                
                 return personInformationToRemove;
             }
             catch (Exception e)
             {
                 Log.Error($"[{nameof(PersonInformationRepository)}.{nameof(DeletePersonInformationForUserByPersonalCode)}]: {e.Message}");
-                throw;
-            }
-        }
-
-        public async Task<PersonInformation> DeletePersonInformationForUserByObjectId(string username, Guid id)
-        {
-            try
-            {
-                var personInformationToRemove = await context.PeopleInformation.Include(pi => pi.ResidencePlace).FirstOrDefaultAsync(pi => pi.User.Username == username && pi.Id == id);
-
-                context.PeopleInformation.Remove(personInformationToRemove);
-                await context.SaveChangesAsync();
-
-                Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(DeletePersonInformationForUserByObjectId)}]: Successfully removed Person Information by object Id: {personInformationToRemove.Id}");
-                return personInformationToRemove;
-            }
-            catch (Exception e)
-            {
-                Log.Error($"[{nameof(PersonInformationRepository)}.{nameof(DeletePersonInformationForUserByObjectId)}]: {e.Message}");
                 throw;
             }
         }

@@ -8,19 +8,19 @@ using Serilog;
 
 namespace PeopleRegistration.BusinessLogic.Services
 {
-    public class UserService(IUserRepository repository) : IUserService
+    public class UserService(IUserRepository userRepository) : IUserService
     {
         public ResponseDto Register(string username, string password)
         {
             try
             {
-                var user = repository.GetUser(username);
+                var user = userRepository.GetUser(username);
 
                 if (user is not null)
                     return new ResponseDto(false, "User already exists!");
 
                 user = CreateUser(username, password);
-                repository.SaveNewUser(user);
+                userRepository.SaveNewUser(user);
 
                 return new ResponseDto(true, "User created!");
             }
@@ -35,7 +35,7 @@ namespace PeopleRegistration.BusinessLogic.Services
         {
             try
             {
-                var user = repository.GetUser(username);
+                var user = userRepository.GetUser(username);
 
                 if (user is null)
                     return new ResponseDto(false, "User does not exist!");
@@ -64,7 +64,7 @@ namespace PeopleRegistration.BusinessLogic.Services
         {
             try
             {
-                var user = repository.GetUser(username);
+                var user = userRepository.GetUser(username);
 
                 if (!VerifyPasswordHash(oldPassword, user.Password, user.PasswordSalt))
                     return new ResponseDto(false, "Old password is incorrect!");
@@ -72,7 +72,7 @@ namespace PeopleRegistration.BusinessLogic.Services
                 CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
                 user.Password = passwordHash;
                 user.PasswordSalt = passwordSalt;
-                repository.UpdateUser(user);
+                userRepository.UpdateUser(user);
 
                 return new ResponseDto(true, "Password updated!");
 
@@ -88,14 +88,14 @@ namespace PeopleRegistration.BusinessLogic.Services
         {
             try
             {
-                var user = repository.GetUser(username);
+                var user = userRepository.GetUser(username);
 
                 if (user is null)
                     return new ResponseDto(false, "User does not exist!");
 
                 if (user.IsActive)
                 {
-                    if (newRole != UserRole.Admin && repository.GetRoleCount(UserRole.Admin) == 1)
+                    if (newRole != UserRole.Admin && userRepository.GetRoleCount(UserRole.Admin) == 1)
                         return new ResponseDto(false, "There cannot be 0 admins in the system!");
                     
                     if (newRole == user.Role)
@@ -105,7 +105,7 @@ namespace PeopleRegistration.BusinessLogic.Services
                         return new ResponseDto(false, "An admin cannot downgrade themselves to a regular user!");
 
                     user.Role = newRole;
-                    repository.UpdateUser(user);
+                    userRepository.UpdateUser(user);
 
                     return new ResponseDto(true, $"Role for User '{user.Username} ({user.Id})' updated successfully!");
                 }
@@ -123,7 +123,7 @@ namespace PeopleRegistration.BusinessLogic.Services
         {
             try
             {
-                var user = repository.GetUser(username);
+                var user = userRepository.GetUser(username);
 
                 if (user is null)
                     return new ResponseDto(false, "User does not exist!");
@@ -142,7 +142,7 @@ namespace PeopleRegistration.BusinessLogic.Services
         {
             try
             {
-                var user = repository.GetUser(username);
+                var user = userRepository.GetUser(username);
 
                 if (user is null)
                     return new ResponseDto(false, "User does not exist!");
@@ -152,7 +152,7 @@ namespace PeopleRegistration.BusinessLogic.Services
 
                 user.IsActive = !user.IsActive;
 
-                repository.UpdateUser(user);
+                userRepository.UpdateUser(user);
 
                 return new ResponseDto(true, $"User '{user.Username} ({user.Id})' activity status changed to '{user.IsActive}' successfully!");
 
@@ -168,7 +168,7 @@ namespace PeopleRegistration.BusinessLogic.Services
         {
             try
             {
-                var user = repository.GetUser(username);
+                var user = userRepository.GetUser(username);
 
                 if (user is null)
                     return new ResponseDto(false, "User does not exist!");
@@ -176,7 +176,7 @@ namespace PeopleRegistration.BusinessLogic.Services
                 if (username == loggedInUsername)
                     return new ResponseDto(false, "Cannot delete your own account!");
 
-                repository.DeleteUser(user);
+                userRepository.DeleteUser(user);
 
                 return new ResponseDto(true, $"User '{user.Username} ({user.Id})' deleted successfully!");
             }

@@ -10,9 +10,11 @@ using PeopleRegistration.Database;
 using Serilog;
 
 //add [ProducesResponseType(http_code)] to controllers
-//create custom exceptions instead of note/category object guid id error code
-//add and remove image methods
 //check PersonInformation email uniqueness in the service
+//don't create residenceplace if all values are null to save disk space in db but create it during personinformation update
+//disable microsoft logger in favor of serilog
+//how to use typeof/nameof when adding personinformation in service rather than hardcoded "string"
+//personinformation test: all methods functionality => error return output => validation attributes => exam requirements => add tests
 
 namespace PeopleRegistration.API
 {
@@ -89,6 +91,10 @@ namespace PeopleRegistration.API
                 if (!db.Users.Any(u => u.Username == "admin"))
                 {
                     userService.Register("admin", "admin");
+                }
+                if (!db.Users.Any(u => u.Username == "test"))
+                {
+                    userService.Register("test", "test");
                 }
             }
 

@@ -12,7 +12,7 @@ using PeopleRegistration.Database;
 namespace PeopleRegistration.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240604181534_init")]
+    [Migration("20240605152115_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -88,15 +88,12 @@ namespace PeopleRegistration.Database.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HouseNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Street")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
