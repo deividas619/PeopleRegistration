@@ -155,7 +155,7 @@ namespace PeopleRegistration.API.Controllers
                 var result = await personInformationService.DeletePersonInformationForUserByPersonalCode(username, personalCode);
 
                 if (result is null)
-                    return BadRequest($"Failed to delete Person Information by Personal Code '{personalCode}' for User '{username}'!");
+                    return BadRequest($"Failed to delete Person Information and its Residence Place by Personal Code '{personalCode}' for User '{username}'!");
 
                 // return that personinformation with this personal code does not exist for this user
 

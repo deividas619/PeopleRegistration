@@ -79,7 +79,7 @@ namespace PeopleRegistration.Database.Repositories
                     context.PeopleInformation.Remove(personInformationToRemove);
                     await context.SaveChangesAsync();
 
-                    Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(DeletePersonInformationForUserByPersonalCode)}]: Successfully removed Person Information by Personal Code: '{personInformationToRemove.PersonalCode}'");
+                    Log.Information($"[{nameof(PersonInformationRepository)}.{nameof(DeletePersonInformationForUserByPersonalCode)}]: Successfully removed Person Information and its Residence Place by Personal Code: '{personInformationToRemove.PersonalCode}'");
                 }
                 
                 return personInformationToRemove;

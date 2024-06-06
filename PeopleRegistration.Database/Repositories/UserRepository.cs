@@ -1,4 +1,5 @@
-﻿using PeopleRegistration.Database.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using PeopleRegistration.Database.Interfaces;
 using PeopleRegistration.Shared.Entities;
 using PeopleRegistration.Shared.Enums;
 using Serilog;
@@ -56,6 +57,14 @@ namespace PeopleRegistration.Database.Repositories
         {
             try
             {
+                var peopleInformationToRemove = context.PeopleInformation.Include(pi => pi.ResidencePlace).Where(pi => pi.User.Username == user.Username).ToList();
+
+                foreach (var personInformation in peopleInformationToRemove)
+                {
+                    context.ResidencePlaces.Remove(personInformation.ResidencePlace);
+                    context.PeopleInformation.Remove(personInformation);
+                }
+                    
                 context.Remove(user);
                 context.SaveChanges();
 

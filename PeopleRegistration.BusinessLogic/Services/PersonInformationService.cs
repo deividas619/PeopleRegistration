@@ -83,13 +83,13 @@ namespace PeopleRegistration.BusinessLogic.Services
                     ProfilePhoto = ResizePhoto(imageBytes, imageEncoding),
                     ProfilePhotoEncoding = imageEncoding,
                     User = userRepository.GetUser(username),
-                    ResidencePlace = new ResidencePlace
+                    ResidencePlace = personInformation.ResidencePlace is not null ? new ResidencePlace
                     {
-                        City = personInformation.ResidencePlace.City != null && personInformation.ResidencePlace.City != "string" ? personInformation.ResidencePlace.City : null,
-                        Street = personInformation.ResidencePlace.Street != null && personInformation.ResidencePlace.Street != "string" ? personInformation.ResidencePlace.Street : null,
-                        HouseNumber = personInformation.ResidencePlace.HouseNumber != null && personInformation.ResidencePlace.HouseNumber != "string" ? personInformation.ResidencePlace.HouseNumber : null,
-                        ApartmentNumber = personInformation.ResidencePlace.ApartmentNumber != null && personInformation.ResidencePlace.ApartmentNumber != "string" ? personInformation.ResidencePlace.ApartmentNumber : null
-                    }
+                        City = personInformation.ResidencePlace.City is not null && personInformation.ResidencePlace.City != "string" ? personInformation.ResidencePlace.City : null,
+                        Street = personInformation.ResidencePlace.Street is not null && personInformation.ResidencePlace.Street != "string" ? personInformation.ResidencePlace.Street : null,
+                        HouseNumber = personInformation.ResidencePlace.HouseNumber is not null && personInformation.ResidencePlace.HouseNumber != "string" ? personInformation.ResidencePlace.HouseNumber : null,
+                        ApartmentNumber = personInformation.ResidencePlace.ApartmentNumber is not null && personInformation.ResidencePlace.ApartmentNumber != "string" ? personInformation.ResidencePlace.ApartmentNumber : null
+                    } : null
                 });
 
                 return personInformation;
@@ -109,7 +109,20 @@ namespace PeopleRegistration.BusinessLogic.Services
 
                 if (existingPersonInformation is not null)
                 {
-                    existingPersonInformation.Name = request.Name;
+                    if (request.Name is not null)
+                        existingPersonInformation.Name = request.Name;
+
+                    if (request.LastName is not null)
+                        existingPersonInformation.LastName = request.LastName;
+
+                    if (request.Gender != existingPersonInformation.Gender)
+                        existingPersonInformation.Gender = request.Gender;
+
+                    if (request.PhoneNumber is not null)
+                        existingPersonInformation.PhoneNumber = request.PhoneNumber;
+
+                    if (request.Email is not null)
+                        existingPersonInformation.Email = request.Email;
 
                     if (imageBytes is not null)
                     {
@@ -117,7 +130,23 @@ namespace PeopleRegistration.BusinessLogic.Services
                         existingPersonInformation.ProfilePhotoEncoding = imageEncoding;
                     }
 
-                    //return await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(existingPersonInformation);
+                    if (request.ResidencePlace is not null) // check if residentplace even exists after this check
+                    {
+                        if (request.ResidencePlace.City is not null)
+                            existingPersonInformation.ResidencePlace.City = request.ResidencePlace.City;
+
+                        if (request.ResidencePlace.Street is not null)
+                            existingPersonInformation.ResidencePlace.Street = request.ResidencePlace.Street;
+
+                        if (request.ResidencePlace.HouseNumber is not null)
+                            existingPersonInformation.ResidencePlace.HouseNumber = request.ResidencePlace.HouseNumber;
+
+                        if (request.ResidencePlace.ApartmentNumber is not null)
+                            existingPersonInformation.ResidencePlace.ApartmentNumber = request.ResidencePlace.ApartmentNumber;
+                    }
+
+                    var repositoryOutput = await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(existingPersonInformation);
+                    return ConvertToDto(repositoryOutput);
                 }
 
                 return null; // return that personinformation with this personal code does not exist for this user
@@ -205,7 +234,7 @@ namespace PeopleRegistration.BusinessLogic.Services
                 PersonalCode = personInformation.PersonalCode,
                 PhoneNumber = personInformation.PhoneNumber,
                 Email = personInformation.Email,
-                ResidencePlace = personInformation.ResidencePlace != null ? ConvertToDto(personInformation.ResidencePlace) : null
+                ResidencePlace = personInformation.ResidencePlace is not null ? ConvertToDto(personInformation.ResidencePlace) : null
             };
         }
 

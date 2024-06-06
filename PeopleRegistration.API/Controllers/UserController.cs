@@ -23,6 +23,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
+
                 return Ok(response);
             }
             catch (Exception e)
@@ -42,6 +43,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
+
                 return Ok(jwtService.GetJwtToken(request.Username, response.Role));
             }
             catch (Exception e)
@@ -62,6 +64,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
+
                 return Ok(response);
             }
             catch (Exception e)
@@ -82,6 +85,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
+
                 return Ok(response);
             }
             catch (Exception e)
@@ -101,6 +105,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
+
                 return Ok(response);
             }
             catch (Exception e)
@@ -121,6 +126,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
+
                 return Ok(response);
             }
             catch (Exception e)
@@ -141,6 +147,7 @@ namespace PeopleRegistration.API.Controllers
 
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
+
                 return Ok(response);
             }
             catch (Exception e)

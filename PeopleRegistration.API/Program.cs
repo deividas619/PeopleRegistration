@@ -14,7 +14,7 @@ using Serilog;
 //don't create residenceplace if all values are null to save disk space in db but create it during personinformation update
 //disable microsoft logger in favor of serilog
 //how to use typeof/nameof when adding personinformation in service rather than hardcoded "string"
-//personinformation test: all methods functionality => error return output => validation attributes => exam requirements => add tests
+//personinformation test: all methods functionality => error return output => validation attributes => user deletion cascade of objects => exam requirements => add tests
 
 namespace PeopleRegistration.API
 {
