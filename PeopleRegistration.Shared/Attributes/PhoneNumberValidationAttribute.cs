@@ -11,8 +11,8 @@ namespace PeopleRegistration.Shared.Attributes
             {
                 string phoneNumber = value.ToString();
 
-                if (!Regex.IsMatch(phoneNumber, @"^\+[1-9]\d{1,10}$"))
-                    return new ValidationResult($"{validationContext.DisplayName} must be a valid phone number! For example: +37066666666");
+                if (!Regex.IsMatch(phoneNumber, @"^\+370[0-9]\d{7}$"))
+                    return new ValidationResult($"{validationContext.DisplayName} must be a valid phone number! For example: +37061234567");
             }
 
             return ValidationResult.Success;

@@ -38,7 +38,7 @@ namespace BusinessLogicUnitTests.Fixture
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserSpecimenBuilder)}.{nameof(CreatePasswordHash)}]: {e.Message}");
+                Log.Error($"[{nameof(UserSpecimenBuilder)}_{nameof(CreatePasswordHash)}]: {e.Message}");
                 throw;
             }
         }

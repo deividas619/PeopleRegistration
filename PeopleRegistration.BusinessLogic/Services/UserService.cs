@@ -26,7 +26,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(Register)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}_{nameof(Register)}]: {e.Message}");
                 throw;
             }
         }
@@ -55,7 +55,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(Login)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}_{nameof(Login)}]: {e.Message}");
                 throw;
             }
         }
@@ -79,7 +79,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(ChangeUserPassword)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}_{nameof(ChangeUserPassword)}]: {e.Message}");
                 throw;
             }
         }
@@ -114,7 +114,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(ChangeRole)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}_{nameof(ChangeRole)}]: {e.Message}");
                 throw;
             }
         }
@@ -133,7 +133,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(GetUserActiveStatus)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}_{nameof(GetUserActiveStatus)}]: {e.Message}");
                 throw;
             }
         }
@@ -159,7 +159,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(ChangeUserActiveStatus)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}_{nameof(ChangeUserActiveStatus)}]: {e.Message}");
                 throw;
             }
         }
@@ -182,7 +182,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(DeleteUser)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}_{nameof(DeleteUser)}]: {e.Message}");
                 throw;
             }
         }
@@ -213,7 +213,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(CreateUser)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}_{nameof(CreateUser)}]: {e.Message}");
                 throw;
             }
         }
@@ -228,7 +228,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(CreatePasswordHash)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}_{nameof(CreatePasswordHash)}]: {e.Message}");
                 throw;
             }
         }
@@ -244,7 +244,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserService)}.{nameof(VerifyPasswordHash)}]: {e.Message}");
+                Log.Error($"[{nameof(UserService)}_{nameof(VerifyPasswordHash)}]: {e.Message}");
                 throw;
             }
         }

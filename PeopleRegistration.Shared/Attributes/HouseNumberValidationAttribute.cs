@@ -11,7 +11,7 @@ namespace PeopleRegistration.Shared.Attributes
             {
                 string stringValue = value.ToString();
 
-                if (!Regex.IsMatch(stringValue, @"^[0-9]+[A-Za-z]?$"))
+                if (!Regex.IsMatch(stringValue, @"^[0-9]{1,3}[A-Za-z]?$"))
                     return new ValidationResult($"{validationContext.DisplayName} must contain only digits and one optional letter!");
             }
 

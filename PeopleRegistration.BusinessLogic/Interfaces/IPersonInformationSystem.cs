@@ -8,7 +8,7 @@ namespace PeopleRegistration.BusinessLogic.Interfaces
         Task<PersonInformationDto> GetSinglePersonInformationForUserByPersonalCode(string username, string personalCode);
         Task<(byte[], string)> GetPersonInformationPhotoByPersonalCode(string username, string personalCode);
         Task<PersonInformationDto> AddPersonInformationForUser(string username, PersonInformationDto personInformation, byte[] imageBytes, string imageEncoding);
-        Task<PersonInformationDto> UpdatePersonInformationForUserByPersonalCode(string username, string personalCode, PersonInformationDto request, byte[] imageBytes, string imageEncoding);
+        Task<PersonInformationUpdateDto> UpdatePersonInformationForUserByPersonalCode(string username, string personalCode, PersonInformationUpdateDto request, byte[] imageBytes, string imageEncoding);
         Task<PersonInformationDto> DeletePersonInformationForUserByPersonalCode(string username, string personalCode);
     }
 }

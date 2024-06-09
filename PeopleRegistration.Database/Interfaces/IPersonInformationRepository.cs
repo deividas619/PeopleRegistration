@@ -8,6 +8,7 @@ namespace PeopleRegistration.Database.Interfaces
         Task<PersonInformation> GetSinglePersonInformationForUserByPersonalCode(string username, string personalCode);
         Task<PersonInformation> AddPersonInformationForUser(PersonInformation personInformation);
         Task<PersonInformation> UpdatePersonInformationForUserByPersonalCode(PersonInformation request);
-        Task<PersonInformation> DeletePersonInformationForUserByPersonalCode(string username, string personalCode);
+        Task<PersonInformation> DeletePersonInformationForUserByPersonalCode(PersonInformation request);
+        Task<ResidencePlace> DeleteResidencePlaceForUser(ResidencePlace request);
     }
 }

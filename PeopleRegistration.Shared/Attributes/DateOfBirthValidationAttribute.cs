@@ -12,9 +12,7 @@ namespace PeopleRegistration.Shared.Attributes
                 bool isValidFormat = DateTime.TryParseExact(value.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate);
 
                 if (!isValidFormat)
-                {
-                    return new ValidationResult($"{validationContext.DisplayName} must be in the format 'yyyy-MM-dd'! For example: 1999-12-31");
-                }
+                    return new ValidationResult($"{validationContext.DisplayName} must be in format 'yyyy-MM-dd' or 'yyyy.MM.dd'! For example: 1999-12-31 or 1999.12.31");
 
                 int age = DateTime.Today.Year - parsedDate.Year;
 

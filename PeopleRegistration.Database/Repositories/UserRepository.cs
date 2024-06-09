@@ -16,7 +16,7 @@ namespace PeopleRegistration.Database.Repositories
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserRepository)}.{nameof(GetUser)}]: {e.Message}");
+                Log.Error($"[{nameof(UserRepository)}_{nameof(GetUser)}]: {e.Message}");
                 throw;
             }
         }
@@ -32,7 +32,7 @@ namespace PeopleRegistration.Database.Repositories
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserRepository)}.{nameof(SaveNewUser)}]: {e.Message}");
+                Log.Error($"[{nameof(UserRepository)}_{nameof(SaveNewUser)}]: {e.Message}");
                 throw;
             }
         }
@@ -44,11 +44,11 @@ namespace PeopleRegistration.Database.Repositories
                 context.Update(user);
                 context.SaveChanges();
 
-                Log.Information($"[{nameof(UserRepository)}.{nameof(UpdateUser)}]: Successfully updated User: '{user.Username} ({user.Id})'");
+                Log.Information($"[{nameof(UserRepository)}_{nameof(UpdateUser)}]: Successfully updated User: '{user.Username} ({user.Id})'");
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserRepository)}.{nameof(UpdateUser)}]: {e.Message}");
+                Log.Error($"[{nameof(UserRepository)}_{nameof(UpdateUser)}]: {e.Message}");
                 throw;
             }
         }
@@ -61,18 +61,19 @@ namespace PeopleRegistration.Database.Repositories
 
                 foreach (var personInformation in peopleInformationToRemove)
                 {
-                    context.ResidencePlaces.Remove(personInformation.ResidencePlace);
+                    if (personInformation.ResidencePlace is not null)
+                        context.ResidencePlaces.Remove(personInformation.ResidencePlace);
                     context.PeopleInformation.Remove(personInformation);
                 }
                     
                 context.Remove(user);
                 context.SaveChanges();
 
-                Log.Information($"[{nameof(UserRepository)}.{nameof(DeleteUser)}]: Successfully deleted User: '{user.Username} ({user.Id})'");
+                Log.Information($"[{nameof(UserRepository)}_{nameof(DeleteUser)}]: Successfully deleted User: '{user.Username} ({user.Id})'");
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserRepository)}.{nameof(DeleteUser)}]: {e.Message}");
+                Log.Error($"[{nameof(UserRepository)}_{nameof(DeleteUser)}]: {e.Message}");
                 throw;
             }
         }
@@ -85,7 +86,7 @@ namespace PeopleRegistration.Database.Repositories
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserRepository)}.{nameof(GetRoleCount)}]: {e.Message}");
+                Log.Error($"[{nameof(UserRepository)}_{nameof(GetRoleCount)}]: {e.Message}");
                 throw;
             }
         }

@@ -22,7 +22,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(GetAllPeopleInformationForUser)}]: {e.Message}");
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(GetAllPeopleInformationForUser)}]: {e.Message}");
                 throw;
             }
         }
@@ -39,7 +39,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(GetSinglePersonInformationForUserByPersonalCode)}]: {e.Message}");
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(GetSinglePersonInformationForUserByPersonalCode)}]: {e.Message}");
                 throw;
             }
         }
@@ -57,7 +57,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(GetPersonInformationPhotoByPersonalCode)}]: {e.Message}");
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(GetPersonInformationPhotoByPersonalCode)}]: {e.Message}");
                 throw;
             }
         }
@@ -68,8 +68,21 @@ namespace PeopleRegistration.BusinessLogic.Services
             {
                 var existingPersonInformation = personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personInformation.PersonalCode);
 
-                if (existingPersonInformation is not null)
-                    return null; // return that personinformation with this personal code already exists for this user
+                if (existingPersonInformation.Result is not null)
+                    throw new ArgumentException($"Person Information already exists by Personal Code '{personInformation.PersonalCode}' for User '{username}'!");
+
+                ResidencePlace residencePlace = null;
+
+                if (personInformation.ResidencePlace.City is not null || personInformation.ResidencePlace.Street is not null || personInformation.ResidencePlace.HouseNumber is not null)
+                {
+                    residencePlace = new ResidencePlace
+                    {
+                        City = personInformation.ResidencePlace.City is not null ? personInformation.ResidencePlace.City : null,
+                        Street = personInformation.ResidencePlace.Street is not null ? personInformation.ResidencePlace.Street : null,
+                        HouseNumber = personInformation.ResidencePlace.HouseNumber is not null ? personInformation.ResidencePlace.HouseNumber : null,
+                        ApartmentNumber = personInformation.ResidencePlace.ApartmentNumber is not null ? personInformation.ResidencePlace.ApartmentNumber : null
+                    };
+                }
 
                 await personInformationRepository.AddPersonInformationForUser(new PersonInformation
                 {
@@ -83,25 +96,19 @@ namespace PeopleRegistration.BusinessLogic.Services
                     ProfilePhoto = ResizePhoto(imageBytes, imageEncoding),
                     ProfilePhotoEncoding = imageEncoding,
                     User = userRepository.GetUser(username),
-                    ResidencePlace = personInformation.ResidencePlace is not null ? new ResidencePlace
-                    {
-                        City = personInformation.ResidencePlace.City is not null && personInformation.ResidencePlace.City != "string" ? personInformation.ResidencePlace.City : null,
-                        Street = personInformation.ResidencePlace.Street is not null && personInformation.ResidencePlace.Street != "string" ? personInformation.ResidencePlace.Street : null,
-                        HouseNumber = personInformation.ResidencePlace.HouseNumber is not null && personInformation.ResidencePlace.HouseNumber != "string" ? personInformation.ResidencePlace.HouseNumber : null,
-                        ApartmentNumber = personInformation.ResidencePlace.ApartmentNumber is not null && personInformation.ResidencePlace.ApartmentNumber != "string" ? personInformation.ResidencePlace.ApartmentNumber : null
-                    } : null
+                    ResidencePlace = residencePlace
                 });
 
                 return personInformation;
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(AddPersonInformationForUser)}]: {e.Message}");
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(AddPersonInformationForUser)}]: {e.Message}");
                 throw;
             }
         }
 
-        public async Task<PersonInformationDto> UpdatePersonInformationForUserByPersonalCode(string username, string personalCode, PersonInformationDto request, byte[] imageBytes, string imageEncoding)
+        public async Task<PersonInformationUpdateDto> UpdatePersonInformationForUserByPersonalCode(string username, string personalCode, PersonInformationUpdateDto request, byte[] imageBytes, string imageEncoding)
         {
             try
             {
@@ -130,8 +137,11 @@ namespace PeopleRegistration.BusinessLogic.Services
                         existingPersonInformation.ProfilePhotoEncoding = imageEncoding;
                     }
 
-                    if (request.ResidencePlace is not null) // check if residentplace even exists after this check
+                    if (request.ResidencePlace.City is not null || request.ResidencePlace.Street is not null || request.ResidencePlace.HouseNumber is not null)
                     {
+                        if (existingPersonInformation.ResidencePlace is null)
+                            existingPersonInformation.ResidencePlace = new ResidencePlace();
+
                         if (request.ResidencePlace.City is not null)
                             existingPersonInformation.ResidencePlace.City = request.ResidencePlace.City;
 
@@ -145,15 +155,19 @@ namespace PeopleRegistration.BusinessLogic.Services
                             existingPersonInformation.ResidencePlace.ApartmentNumber = request.ResidencePlace.ApartmentNumber;
                     }
 
+                    if (request.ResidencePlace.City is null && request.ResidencePlace.Street is null && request.ResidencePlace.HouseNumber is null && request.ResidencePlace.ApartmentNumber is null && existingPersonInformation.ResidencePlace is not null)
+                        personInformationRepository.DeleteResidencePlaceForUser(existingPersonInformation.ResidencePlace);
+
                     var repositoryOutput = await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(existingPersonInformation);
-                    return ConvertToDto(repositoryOutput);
+
+                    return ConvertToUpdateDto(repositoryOutput);
                 }
 
-                return null; // return that personinformation with this personal code does not exist for this user
+                throw new ArgumentException($"No Person Information was found by Personal Code '{personalCode}' for User '{username}'!");
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(UpdatePersonInformationForUserByPersonalCode)}]: {e.Message}");
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(UpdatePersonInformationForUserByPersonalCode)}]: {e.Message}");
                 throw;
             }
         }
@@ -162,16 +176,20 @@ namespace PeopleRegistration.BusinessLogic.Services
         {
             try
             {
-                var existingPersonInformation = await personInformationRepository.DeletePersonInformationForUserByPersonalCode(username, personalCode);
-
+                var existingPersonInformation = await personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personalCode);
+                
                 if (existingPersonInformation is not null)
-                    return ConvertToDto(existingPersonInformation);
+                {
+                    var repositoryOutput = await personInformationRepository.DeletePersonInformationForUserByPersonalCode(existingPersonInformation);
+                    
+                    return ConvertToDto(repositoryOutput);
+                }
 
-                return null; // return that personinformation with this personal code does not exist for this user
+                throw new ArgumentException($"No Person Information was found by Personal Code '{personalCode}' for User '{username}'!");
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(DeletePersonInformationForUserByPersonalCode)}]: {e.Message}");
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(DeletePersonInformationForUserByPersonalCode)}]: {e.Message}");
                 throw;
             }
         }
@@ -218,7 +236,7 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(PersonInformationService)}.{nameof(ResizePhoto)}]: {e.Message}");
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(ResizePhoto)}]: {e.Message}");
                 throw;
             }
         }
@@ -232,6 +250,19 @@ namespace PeopleRegistration.BusinessLogic.Services
                 Gender = personInformation.Gender,
                 DateOfBirth = personInformation.DateOfBirth,
                 PersonalCode = personInformation.PersonalCode,
+                PhoneNumber = personInformation.PhoneNumber,
+                Email = personInformation.Email,
+                ResidencePlace = personInformation.ResidencePlace is not null ? ConvertToDto(personInformation.ResidencePlace) : null
+            };
+        }
+
+        private PersonInformationUpdateDto ConvertToUpdateDto(PersonInformation personInformation)
+        {
+            return new PersonInformationUpdateDto
+            {
+                Name = personInformation.Name,
+                LastName = personInformation.LastName,
+                Gender = personInformation.Gender,
                 PhoneNumber = personInformation.PhoneNumber,
                 Email = personInformation.Email,
                 ResidencePlace = personInformation.ResidencePlace is not null ? ConvertToDto(personInformation.ResidencePlace) : null

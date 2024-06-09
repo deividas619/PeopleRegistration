@@ -11,8 +11,8 @@ namespace PeopleRegistration.Shared.Attributes
             {
                 string stringValue = value.ToString();
 
-                if (!Regex.IsMatch(stringValue, @"^[0-9]{0,4}[A-Za-z]?"))
-                    return new ValidationResult($"{validationContext.DisplayName} must contain only up to 4 digits and one optional letter!");
+                if (!Regex.IsMatch(stringValue, @"^[0-9]{1,3}[A-Za-z]?$"))
+                    return new ValidationResult($"{validationContext.DisplayName} must contain only up to 3 digits and one optional letter!");
             }
 
             return ValidationResult.Success;

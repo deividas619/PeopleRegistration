@@ -11,8 +11,8 @@ namespace PeopleRegistration.Shared.Attributes
             {
                 string stringValue = value.ToString();
 
-                if (Regex.IsMatch(stringValue, @"^(?=.*\s)[a-zA-Z\s-]+\d{0,2} g\.$"))
-                    return new ValidationResult($"{validationContext.DisplayName} must contain only letters, up to 2 digits, certain allowed characters (spaces, hyphens) and must end with ' g.'!");
+                if (!Regex.IsMatch(stringValue, @"^[a-zA-Z\s-]*\d{0,2}[a-zA-Z\s-]*$"))
+                    return new ValidationResult($"{validationContext.DisplayName} must contain letters, up to 2 digits, certain allowed characters (spaces, hyphens)!");
             }
 
             return ValidationResult.Success;

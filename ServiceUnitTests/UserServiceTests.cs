@@ -697,7 +697,7 @@ namespace BusinessLogicUnitTests
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserServiceTests)}.{nameof(CreatePasswordHash)}]: {e.Message}");
+                Log.Error($"[{nameof(UserServiceTests)}_{nameof(CreatePasswordHash)}]: {e.Message}");
                 throw;
             }
         }

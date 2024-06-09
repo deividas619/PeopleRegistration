@@ -9,12 +9,8 @@ using PeopleRegistration.BusinessLogic.Services;
 using PeopleRegistration.Database;
 using Serilog;
 
-//add [ProducesResponseType(http_code)] to controllers
-//check PersonInformation email uniqueness in the service
-//don't create residenceplace if all values are null to save disk space in db but create it during personinformation update
-//disable microsoft logger in favor of serilog
-//how to use typeof/nameof when adding personinformation in service rather than hardcoded "string"
-//personinformation test: all methods functionality => error return output => validation attributes => user deletion cascade of objects => exam requirements => add tests
+//check PersonInformation email, personal code uniqueness and personal code == birthday in the service
+//thread error when updating
 
 namespace PeopleRegistration.API
 {

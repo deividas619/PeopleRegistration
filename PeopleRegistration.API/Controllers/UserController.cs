@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PeopleRegistration.BusinessLogic.Interfaces;
@@ -14,6 +15,8 @@ namespace PeopleRegistration.API.Controllers
     public class UserController(IUserService userService, IJwtService jwtService) : ControllerBase
     {
         [HttpPost("Register")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Unauthorized]
         public ActionResult<ResponseDto> Register([FromQuery] UserDto request)
         {
@@ -28,12 +31,14 @@ namespace PeopleRegistration.API.Controllers
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserController)}.{nameof(Register)}]: {e.Message}");
+                Log.Error($"[{nameof(UserController)}_{nameof(Register)}]: {e.Message}");
                 throw;
             }
         }
 
         [HttpPost("Login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [AllowAnonymous]
         public ActionResult<ResponseDto> Login([FromQuery] LoginDto request)
         {
@@ -48,12 +53,14 @@ namespace PeopleRegistration.API.Controllers
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserController)}.{nameof(Login)}]: {e.Message}");
+                Log.Error($"[{nameof(UserController)}_{nameof(Login)}]: {e.Message}");
                 throw;
             }
         }
 
         [HttpPost("ChangePassword")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize]
         public ActionResult<ResponseDto> ChangePassword([FromQuery] ChangePasswordDto request)
         {
@@ -69,15 +76,16 @@ namespace PeopleRegistration.API.Controllers
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserController)}.{nameof(ChangePassword)}]: {e.Message}");
+                Log.Error($"[{nameof(UserController)}_{nameof(ChangePassword)}]: {e.Message}");
                 throw;
             }
         }
 
         [HttpPost("ChangeRole")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public ActionResult<ResponseDto> ChangeRole([FromQuery] string username, [FromQuery] UserRole newRole)
+        public ActionResult<ResponseDto> ChangeRole([FromQuery, Required] string username, [FromQuery] UserRole newRole)
         {
             try
             {
@@ -90,14 +98,16 @@ namespace PeopleRegistration.API.Controllers
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserController)}.{nameof(ChangeRole)}]: {e.Message}");
+                Log.Error($"[{nameof(UserController)}_{nameof(ChangeRole)}]: {e.Message}");
                 throw;
             }
         }
 
         [HttpGet("GetUserActiveStatus")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public ActionResult<ResponseDto> GetUserActiveStatus([FromQuery] string username)
+        public ActionResult<ResponseDto> GetUserActiveStatus([FromQuery, Required] string username)
         {
             try
             {
@@ -110,14 +120,16 @@ namespace PeopleRegistration.API.Controllers
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserController)}.{nameof(GetUserActiveStatus)}]: {e.Message}");
+                Log.Error($"[{nameof(UserController)}_{nameof(GetUserActiveStatus)}]: {e.Message}");
                 throw;
             }
         }
 
         [HttpPost("ChangeUserActiveStatus")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public ActionResult<ResponseDto> ChangeUserActiveStatus([FromQuery] string username)
+        public ActionResult<ResponseDto> ChangeUserActiveStatus([FromQuery, Required] string username)
         {
             try
             {
@@ -131,14 +143,16 @@ namespace PeopleRegistration.API.Controllers
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserController)}.{nameof(ChangeUserActiveStatus)}]: {e.Message}");
+                Log.Error($"[{nameof(UserController)}_{nameof(ChangeUserActiveStatus)}]: {e.Message}");
                 throw;
             }
         }
 
         [HttpDelete("DeleteUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public ActionResult<ResponseDto> DeleteUser([FromQuery] string username)
+        public ActionResult<ResponseDto> DeleteUser([FromQuery, Required] string username)
         {
             try
             {
@@ -152,7 +166,7 @@ namespace PeopleRegistration.API.Controllers
             }
             catch (Exception e)
             {
-                Log.Error($"[{nameof(UserController)}.{nameof(DeleteUser)}]: {e.Message}");
+                Log.Error($"[{nameof(UserController)}_{nameof(DeleteUser)}]: {e.Message}");
                 throw;
             }
         }

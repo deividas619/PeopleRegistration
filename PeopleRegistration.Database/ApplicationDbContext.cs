@@ -5,9 +5,9 @@ namespace PeopleRegistration.Database
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
-        public DbSet<PersonInformation> PeopleInformation { get; set; }
-        public DbSet<ResidencePlace> ResidencePlaces { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<PersonInformation> PeopleInformation { get; set; }
+        public virtual DbSet<ResidencePlace> ResidencePlaces { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

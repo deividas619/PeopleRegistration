@@ -51,10 +51,10 @@ namespace PeopleRegistration.Shared.Attributes
             e %= 11;
             if (d < 10)
                 return d;
-            else if (e < 10)
+            if (e < 10)
                 return e;
-            else
-                return 0;
+
+            return 0;
         }
     }
 }
