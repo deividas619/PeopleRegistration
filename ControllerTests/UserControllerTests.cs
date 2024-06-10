@@ -24,11 +24,12 @@ namespace ControllerUnitTests
         }
 
         [Theory]
-        [UserControllerTestsFixture]
+        [ControllerTestsFixture]
         public void Register_ReturnsBadRequest_WhenUserExists(UserDto testUser)
         {
             // Arrange
             ResponseDto response = new ResponseDto(false, "User already exists");
+            
             _mockUserService.Setup(s => s.Register(testUser.Username, testUser.Password)).Returns(response);
 
             // Act
@@ -40,11 +41,12 @@ namespace ControllerUnitTests
         }
 
         [Theory]
-        [UserControllerTestsFixture]
+        [ControllerTestsFixture]
         public void Register_ReturnsResponse_WhenSuccessful(UserDto testUser)
         {
             // Arrange
             ResponseDto response = new ResponseDto(true, "User created!");
+            
             _mockUserService.Setup(s => s.Register(testUser.Username, testUser.Password)).Returns(response);
 
             // Act
@@ -56,10 +58,11 @@ namespace ControllerUnitTests
         }
 
         [Theory]
-        [UserControllerTestsFixture]
+        [ControllerTestsFixture]
         public void Register_ThrowsException_WhenErrorOccurs(UserDto testUser)
         {
             // Arrange
+            
             _mockUserService.Setup(s => s.Register(testUser.Username, testUser.Password)).Throws(new Exception("DB Connection Error"));
 
             // Act & Assert
@@ -68,11 +71,12 @@ namespace ControllerUnitTests
         }
 
         [Theory]
-        [UserControllerTestsFixture]
+        [ControllerTestsFixture]
         public void Login_ReturnsBadRequest_WhenUserDoesNotExist(LoginDto testUser)
         {
             // Arrange
             ResponseDto response = new ResponseDto(false, "User does not exist");
+            
             _mockUserService.Setup(s => s.Login(testUser.Username, testUser.Password)).Returns(response);
 
             // Act
@@ -84,7 +88,7 @@ namespace ControllerUnitTests
         }
 
         [Theory]
-        [UserControllerTestsFixture]
+        [ControllerTestsFixture]
         public void Login_ReturnsBadRequest_WhenPasswordIsEmpty(LoginDto testUser)
         {
             // Arrange
@@ -100,15 +104,16 @@ namespace ControllerUnitTests
             var result = _controller.Login(testUser);
 
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<BadRequestObjectResult>(result.Result);
         }
 
         [Theory]
-        [UserControllerTestsFixture]
+        [ControllerTestsFixture]
         public void Login_ReturnsBadRequest_WhenPasswordIsIncorrect(LoginDto testUser)
         {
             // Arrange
             ResponseDto response = new ResponseDto(false, "Password is incorrect!");
+            
             _mockUserService.Setup(s => s.Login(testUser.Username, testUser.Password)).Returns(response);
 
             // Act
@@ -120,12 +125,13 @@ namespace ControllerUnitTests
         }
 
         [Theory]
-        [UserControllerTestsFixture]
+        [ControllerTestsFixture]
         public void Login_ReturnsJwtToken_WhenSuccessful(LoginDto testUser)
         {
             // Arrange
             ResponseDto userServiceResponse = new ResponseDto(true, "User logged in!", UserRole.Regular);
             string jwtToken = "jwtToken";
+            
             _mockUserService.Setup(s => s.Login(testUser.Username, testUser.Password)).Returns(userServiceResponse);
             _mockJwtService.Setup(s => s.GetJwtToken(testUser.Username, UserRole.Regular)).Returns(jwtToken);
 
@@ -138,7 +144,7 @@ namespace ControllerUnitTests
         }
 
         [Theory]
-        [UserControllerTestsFixture]
+        [ControllerTestsFixture]
         public void Login_ThrowsException_WhenErrorOccurs(LoginDto testUser)
         {
             // Arrange
@@ -153,11 +159,9 @@ namespace ControllerUnitTests
         public void ChangePassword_ReturnsBadRequest_WhenOldPasswordIsIncorrect()
         {
             // Arrange
-            string username = "testuser";
-
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, "testuser")
             }));
 
             _controller.ControllerContext = new ControllerContext()
@@ -167,7 +171,8 @@ namespace ControllerUnitTests
 
             ChangePasswordDto request = new ChangePasswordDto { OldPassword = "OLD_P@55w#rD!!", NewPassword = "P@55w#rD!!", NewPasswordAgain = "DIFFERENT_P@55w#rD!!" };
             ResponseDto response = new ResponseDto(false, "Old password is incorrect!");
-            _mockUserService.Setup(s => s.ChangeUserPassword(username, request.OldPassword, request.NewPassword, request.NewPasswordAgain)).Returns(response);
+            
+            _mockUserService.Setup(s => s.ChangeUserPassword("testuser", request.OldPassword, request.NewPassword, request.NewPasswordAgain)).Returns(response);
 
             // Act
             var result = _controller.ChangePassword(request);
@@ -181,11 +186,9 @@ namespace ControllerUnitTests
         public void ChangePassword_ReturnsBadRequest_WhenNewPasswordsDoNotMatch()
         {
             // Arrange
-            string username = "testuser";
-
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, "testuser")
             }));
 
             _controller.ControllerContext = new ControllerContext()
@@ -195,7 +198,8 @@ namespace ControllerUnitTests
 
             ChangePasswordDto request = new ChangePasswordDto { OldPassword = "OLD_P@55w#rD!!", NewPassword = "NEW_P@55w#rD!!", NewPasswordAgain = "DIFFERENT_NEW_P@55w#rD!!" };
             ResponseDto response = new ResponseDto(false, "New passwords do not match!");
-            _mockUserService.Setup(s => s.ChangeUserPassword(username, request.OldPassword, request.NewPassword, request.NewPasswordAgain)).Returns(response);
+
+            _mockUserService.Setup(s => s.ChangeUserPassword("testuser", request.OldPassword, request.NewPassword, request.NewPasswordAgain)).Returns(response);
 
             // Act
             var result = _controller.ChangePassword(request);
@@ -209,11 +213,9 @@ namespace ControllerUnitTests
         public void ChangePassword_ReturnsResponse_WhenSuccessful()
         {
             // Arrange
-            string username = "testuser";
-
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name,"testuser")
             }));
 
             _controller.ControllerContext = new ControllerContext()
@@ -223,7 +225,8 @@ namespace ControllerUnitTests
 
             ChangePasswordDto request = new ChangePasswordDto { OldPassword = "OLD_P@55w#rD!!", NewPassword = "NEW_P@55w#rD!!", NewPasswordAgain = "NEW_P@55w#rD!!" };
             ResponseDto response = new ResponseDto(true, "Password updated!");
-            _mockUserService.Setup(s => s.ChangeUserPassword(username, request.OldPassword, request.NewPassword, request.NewPasswordAgain)).Returns(response);
+            
+            _mockUserService.Setup(s => s.ChangeUserPassword("testuser", request.OldPassword, request.NewPassword, request.NewPasswordAgain)).Returns(response);
 
             // Act
             var result = _controller.ChangePassword(request);
@@ -237,13 +240,13 @@ namespace ControllerUnitTests
         public void ChangeRole_ReturnsBadRequest_WhenUserDoesNotExist()
         {
             // Arrange
-            string username = "testuser";
             UserRole newRole = UserRole.Admin;
             ResponseDto response = new ResponseDto(false, "User does not exist!");
-            _mockUserService.Setup(s => s.ChangeRole(username, newRole)).Returns(response);
+            
+            _mockUserService.Setup(s => s.ChangeRole("testuser", newRole)).Returns(response);
 
             // Act
-            var result = _controller.ChangeRole(username, newRole);
+            var result = _controller.ChangeRole("testuser", newRole);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -254,13 +257,13 @@ namespace ControllerUnitTests
         public void ChangeRole_ReturnsBadRequest_WhenNoAdminsLeft()
         {
             // Arrange
-            string username = "admin";
             UserRole newRole = UserRole.Regular;
             ResponseDto response = new ResponseDto(false, "There cannot be 0 admins in the system!");
-            _mockUserService.Setup(s => s.ChangeRole(username, newRole)).Returns(response);
+            
+            _mockUserService.Setup(s => s.ChangeRole("admin", newRole)).Returns(response);
 
             // Act
-            var result = _controller.ChangeRole(username, newRole);
+            var result = _controller.ChangeRole("admin", newRole);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -271,13 +274,13 @@ namespace ControllerUnitTests
         public void ChangeRole_ReturnsBadRequest_WhenNewRoleIsSameAsOldRole()
         {
             // Arrange
-            string username = "testuser";
             UserRole newRole = UserRole.Regular;
             ResponseDto response = new ResponseDto(false, "User already has that role!");
-            _mockUserService.Setup(s => s.ChangeRole(username, newRole)).Returns(response);
+            
+            _mockUserService.Setup(s => s.ChangeRole("testuser", newRole)).Returns(response);
 
             // Act
-            var result = _controller.ChangeRole(username, newRole);
+            var result = _controller.ChangeRole("testuser", newRole);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -288,13 +291,13 @@ namespace ControllerUnitTests
         public void ChangeRole_ReturnsResponse_WhenSuccessful()
         {
             // Arrange
-            string username = "testuser";
             UserRole newRole = UserRole.Admin;
-            ResponseDto response = new ResponseDto(true, $"Role for User '{username} updated successfully!");
-            _mockUserService.Setup(s => s.ChangeRole(username, newRole)).Returns(response);
+            ResponseDto response = new ResponseDto(true, $"Role for User 'testuser' updated successfully!");
+            
+            _mockUserService.Setup(s => s.ChangeRole("testuser", newRole)).Returns(response);
 
             // Act
-            var result = _controller.ChangeRole(username, newRole);
+            var result = _controller.ChangeRole("testuser", newRole);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -305,13 +308,13 @@ namespace ControllerUnitTests
         public void ChangeRole_ReturnsBadRequest_WhenAdminUserTriesToBecomeRegular()
         {
             // Arrange
-            string username = "admin";
             UserRole newRole = UserRole.Regular;
             ResponseDto response = new ResponseDto(false, "An admin cannot downgrade themselves to a regular user!");
-            _mockUserService.Setup(s => s.ChangeRole(username, newRole)).Returns(response);
+            
+            _mockUserService.Setup(s => s.ChangeRole("admin", newRole)).Returns(response);
 
             // Act
-            var result = _controller.ChangeRole(username, newRole);
+            var result = _controller.ChangeRole("admin", newRole);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -322,12 +325,12 @@ namespace ControllerUnitTests
         public void GetUserActiveStatus_ReturnsBadRequest_WhenUserDoesNotExist()
         {
             // Arrange
-            string username = "testuser";
             ResponseDto response = new ResponseDto(false, "User does not exist!");
-            _mockUserService.Setup(s => s.GetUserActiveStatus(username)).Returns(response);
+            
+            _mockUserService.Setup(s => s.GetUserActiveStatus("testuser")).Returns(response);
 
             // Act
-            var result = _controller.GetUserActiveStatus(username);
+            var result = _controller.GetUserActiveStatus("testuser");
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -338,12 +341,12 @@ namespace ControllerUnitTests
         public void GetUserActiveStatus_ReturnsResponse_WhenSuccessful()
         {
             // Arrange
-            string username = "testuser";
-            ResponseDto response = new ResponseDto(true, $"User '{username}' activity status is 'Active'!");
-            _mockUserService.Setup(s => s.GetUserActiveStatus(username)).Returns(response);
+            ResponseDto response = new ResponseDto(true, $"User 'testuser' activity status is 'Active'!");
+            
+            _mockUserService.Setup(s => s.GetUserActiveStatus("testuser")).Returns(response);
 
             // Act
-            var result = _controller.GetUserActiveStatus(username);
+            var result = _controller.GetUserActiveStatus("testuser");
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -354,11 +357,9 @@ namespace ControllerUnitTests
         public void ChangeUserActiveStatus_ReturnsBadRequest_WhenUserDoesNotExist()
         {
             // Arrange
-            string username = "testuser";
-
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, "testuser")
             }));
 
             _controller.ControllerContext = new ControllerContext()
@@ -367,10 +368,11 @@ namespace ControllerUnitTests
             };
 
             ResponseDto response = new ResponseDto(false, "User does not exist!");
-            _mockUserService.Setup(s => s.ChangeUserActiveStatus(username, It.IsAny<string>())).Returns(response);
+            
+            _mockUserService.Setup(s => s.ChangeUserActiveStatus("testuser", It.IsAny<string>())).Returns(response);
 
             // Act
-            var result = _controller.ChangeUserActiveStatus(username);
+            var result = _controller.ChangeUserActiveStatus("testuser");
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -381,11 +383,9 @@ namespace ControllerUnitTests
         public void ChangeUserActiveStatus_ReturnsResponse_WhenSuccessful()
         {
             // Arrange
-            string username = "testuser";
-
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, "testuser")
             }));
 
             _controller.ControllerContext = new ControllerContext()
@@ -393,11 +393,12 @@ namespace ControllerUnitTests
                 HttpContext = new DefaultHttpContext() { User = user }
             };
 
-            ResponseDto response = new ResponseDto(true, $"User '{username}' activity status changed to 'Inactive' successfully!");
-            _mockUserService.Setup(s => s.ChangeUserActiveStatus(username, It.IsAny<string>())).Returns(response);
+            ResponseDto response = new ResponseDto(true, $"User 'testuser' activity status changed to 'Inactive' successfully!");
+            
+            _mockUserService.Setup(s => s.ChangeUserActiveStatus("testuser", It.IsAny<string>())).Returns(response);
 
             // Act
-            var result = _controller.ChangeUserActiveStatus(username);
+            var result = _controller.ChangeUserActiveStatus("testuser");
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -408,11 +409,9 @@ namespace ControllerUnitTests
         public void ChangeUserActiveStatus_ReturnsBadRequest_WhenTryingToDeactivateOwnAccount()
         {
             // Arrange
-            string username = "testuser";
-
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, "testuser")
             }));
 
             _controller.ControllerContext = new ControllerContext()
@@ -421,10 +420,11 @@ namespace ControllerUnitTests
             };
 
             ResponseDto response = new ResponseDto(false, "Cannot deactivate your own account!");
-            _mockUserService.Setup(s => s.ChangeUserActiveStatus(username, username)).Returns(response);
+            
+            _mockUserService.Setup(s => s.ChangeUserActiveStatus("testuser", "testuser")).Returns(response);
 
             // Act
-            var result = _controller.ChangeUserActiveStatus(username);
+            var result = _controller.ChangeUserActiveStatus("testuser");
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -435,11 +435,9 @@ namespace ControllerUnitTests
         public void DeleteUser_ReturnsBadRequest_WhenUserDoesNotExist()
         {
             // Arrange
-            string username = "testuser";
-
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, "testuser")
             }));
 
             _controller.ControllerContext = new ControllerContext()
@@ -448,10 +446,11 @@ namespace ControllerUnitTests
             };
 
             ResponseDto response = new ResponseDto(false, "User does not exist!");
-            _mockUserService.Setup(s => s.DeleteUser(username, It.IsAny<string>())).Returns(response);
+            
+            _mockUserService.Setup(s => s.DeleteUser("testuser", It.IsAny<string>())).Returns(response);
 
             // Act
-            var result = _controller.DeleteUser(username);
+            var result = _controller.DeleteUser("testuser");
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -462,11 +461,9 @@ namespace ControllerUnitTests
         public void DeleteUser_ReturnsResponse_WhenSuccessful()
         {
             // Arrange
-            string username = "testuser";
-
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, "testuser")
             }));
 
             _controller.ControllerContext = new ControllerContext()
@@ -474,11 +471,12 @@ namespace ControllerUnitTests
                 HttpContext = new DefaultHttpContext() { User = user }
             };
 
-            ResponseDto response = new ResponseDto(true, $"User '{username}' deleted successfully!");
-            _mockUserService.Setup(s => s.DeleteUser(username, It.IsAny<string>())).Returns(response);
+            ResponseDto response = new ResponseDto(true, $"User 'testuser' deleted successfully!");
+            
+            _mockUserService.Setup(s => s.DeleteUser("testuser", It.IsAny<string>())).Returns(response);
 
             // Act
-            var result = _controller.DeleteUser(username);
+            var result = _controller.DeleteUser("testuser");
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -489,11 +487,9 @@ namespace ControllerUnitTests
         public void DeleteUser_ReturnsBadRequest_WhenTryingToDeleteOwnAccount()
         {
             // Arrange
-            string username = "testuser";
-
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, "testuser")
             }));
 
             _controller.ControllerContext = new ControllerContext()
@@ -502,10 +498,11 @@ namespace ControllerUnitTests
             };
 
             ResponseDto response = new ResponseDto(false, "Cannot delete your own account!");
-            _mockUserService.Setup(s => s.DeleteUser(username, username)).Returns(response);
+            
+            _mockUserService.Setup(s => s.DeleteUser("testuser", "testuser")).Returns(response);
 
             // Act
-            var result = _controller.DeleteUser(username);
+            var result = _controller.DeleteUser("testuser");
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);

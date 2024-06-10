@@ -2,12 +2,12 @@
 
 namespace ControllerUnitTests.Fixture
 {
-    public class UserControllerTestsFixtureAttribute : AutoDataAttribute
+    public class ControllerTestsFixtureAttribute : AutoDataAttribute
     {
-        public UserControllerTestsFixtureAttribute() : base(() =>
+        public ControllerTestsFixtureAttribute() : base(() =>
         {
             var fixture = new AutoFixture.Fixture();
-            fixture.Customizations.Add(new UserControllerTestsSpecimenBuilder());
+            fixture.Customizations.Add(new ControllerTestsSpecimenBuilder());
             return fixture;
         })
         {

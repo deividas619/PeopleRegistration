@@ -28,7 +28,7 @@ namespace PeopleRegistration.Database.Repositories
                 context.Users.Add(user);
                 context.SaveChanges();
 
-                Log.Information($"[{nameof(SaveNewUser)}]: Successfully created User: '{user.Username} ({user.Id})'");
+                Log.Information($"[{nameof(UserRepository)}_{nameof(SaveNewUser)}]: Successfully created User: '{user.Username} ({user.Id})'");
             }
             catch (Exception e)
             {
@@ -63,6 +63,7 @@ namespace PeopleRegistration.Database.Repositories
                 {
                     if (personInformation.ResidencePlace is not null)
                         context.ResidencePlaces.Remove(personInformation.ResidencePlace);
+
                     context.PeopleInformation.Remove(personInformation);
                 }
                     

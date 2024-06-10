@@ -9,8 +9,8 @@ using PeopleRegistration.BusinessLogic.Services;
 using PeopleRegistration.Database;
 using Serilog;
 
-//check PersonInformation email, personal code uniqueness and personal code == birthday in the service
 //thread error when updating
+//check unit test fixtures everywhere and check whether tests are needed/logical
 
 namespace PeopleRegistration.API
 {

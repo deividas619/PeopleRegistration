@@ -5,9 +5,9 @@ using PeopleRegistration.BusinessLogic.Interfaces;
 
 namespace BusinessLogicUnitTests.Fixture
 {
-    public class UserFixtureAttribute : AutoDataAttribute
+    public class BusinessLogicTestsFixtureAttribute : AutoDataAttribute
     {
-        public UserFixtureAttribute() : base(() =>
+        public BusinessLogicTestsFixtureAttribute() : base(() =>
         {
             var fixture = new AutoFixture.Fixture();
             var mockCarService = new Mock<IUserService>();

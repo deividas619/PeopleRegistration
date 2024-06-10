@@ -24,7 +24,7 @@ namespace PeopleRegistration.UI.Pages
               return Page();
             }
 
-            var jwtToken = jwtService.GetJwtToken(Username);
+            var jwtToken = jwtService.GetJwtToken(Username, response.Role);
 
             Response.Cookies.Append("jwtToken", jwtToken, new CookieOptions { HttpOnly = true, Secure = true });
 

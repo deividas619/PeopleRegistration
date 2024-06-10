@@ -20,15 +20,16 @@ namespace BusinessLogicUnitTests
             _userService = new UserService(_mockRepo.Object);
         }
 
-        [Fact]
-        public void Register_UserDoesNotExist_CreatesNewUser()
+        [Theory]
+        [BusinessLogicTestsFixture]
+        public void Register_UserDoesNotExist_CreatesNewUser(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns<User>(null);
             _mockRepo.Setup(repo => repo.SaveNewUser(It.IsAny<User>()));
 
             // Act
-            var response = _userService.Register("testuser", "P@55w#rD!!");
+            var response = _userService.Register(testUser.Username, "P@55w#rD!!");
 
             // Assert
             Assert.True(response.IsSuccess);
@@ -66,15 +67,16 @@ namespace BusinessLogicUnitTests
             Assert.Equal("User created!", response.Message);
         }
 
-        [Fact]
-        public void Register_SaveUserThrowsException_ReturnsFailure()
+        [Theory]
+        [BusinessLogicTestsFixture]
+        public void Register_SaveUserThrowsException_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns<User>(null);
             _mockRepo.Setup(repo => repo.SaveNewUser(It.IsAny<User>())).Throws<Exception>();
 
             // Act & Assert
-            Assert.Throws<Exception>(() => _userService.Register("testuser", "P@55w#rD!!"));
+            Assert.Throws<Exception>(() => _userService.Register(testUser.Username, "P@55w#rD!!"));
         }
 
         [Fact]
@@ -92,14 +94,14 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void Login_ValidCredentials_ReturnsSuccess(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.Login("testuser", "OLD_P@55w#rD!!");
+            var response = _userService.Login(testUser.Username, "OLD_P@55w#rD!!");
 
             // Assert
             Assert.True(response.IsSuccess);
@@ -107,14 +109,14 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void Login_IncorrectPassword_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.Login("testuser", "WRONG_P@55w#rD!!");
+            var response = _userService.Login(testUser.Username, "WRONG_P@55w#rD!!");
 
             // Assert
             Assert.False(response.IsSuccess);
@@ -122,57 +124,61 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void Login_InactiveUser_ReturnsFailure(User testUser)
         {
             // Arrange
             testUser.IsActive = false;
+            
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.Login("testuser", "OLD_P@55w#rD!!");
+            var response = _userService.Login(testUser.Username, "OLD_P@55w#rD!!");
 
             // Assert
             Assert.False(response.IsSuccess);
-            Assert.Equal($"The User 'testuser ({testUser.Id})' is suspended! Contact system administrator!", response.Message);
+            Assert.Equal($"The User '{testUser.Username} ({testUser.Id})' is suspended! Contact system administrator!", response.Message);
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void Login_ExpiredPassword_ReturnsFailure(User testUser)
         {
             // Arrange
             testUser.PasswordSetDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-91));
+            
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.Login("testuser", "OLD_P@55w#rD!!");
+            var response = _userService.Login(testUser.Username, "OLD_P@55w#rD!!");
 
             // Assert
             Assert.False(response.IsSuccess);
             Assert.Equal("Password has expired. Please change your password!", response.Message);
         }
 
-        [Fact]
-        public void Login_ExceptionThrown_ReturnsFailure()
+        [Theory]
+        [BusinessLogicTestsFixture]
+        public void Login_ExceptionThrown_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Throws<Exception>();
 
             // Act & Assert
-            Assert.Throws<Exception>(() => _userService.Login("testuser", "P@55w#rD!!"));
+            Assert.Throws<Exception>(() => _userService.Login(testUser.Username, "P@55w#rD!!"));
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void Login_ValidCredentialsPasswordNeverExpires_ReturnsSuccess(User testUser)
         {
             // Arrange
             testUser.PasswordNeverExpires = true;
+            
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.Login("testuser", "OLD_P@55w#rD!!");
+            var response = _userService.Login(testUser.Username, "OLD_P@55w#rD!!");
 
             // Assert
             Assert.True(response.IsSuccess);
@@ -180,7 +186,7 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void Login_ValidCredentialsAdminRole_ReturnsSuccess(User testUser)
         {
             // Arrange
@@ -200,14 +206,14 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void Login_ValidCredentialsRegularRole_ReturnsSuccess(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.Login("testuser", "OLD_P@55w#rD!!");
+            var response = _userService.Login(testUser.Username, "OLD_P@55w#rD!!");
 
             // Assert
             Assert.True(response.IsSuccess);
@@ -216,15 +222,16 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void Login_CaseInsensitiveUsername_ReturnsSuccess(User testUser)
         {
             // Arrange
             testUser.Username = "TestUser";
+            
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.Login("testuser", "OLD_P@55w#rD!!");
+            var response = _userService.Login(testUser.Username, "OLD_P@55w#rD!!");
 
             // Assert
             Assert.True(response.IsSuccess);
@@ -232,14 +239,14 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeUserPassword_PasswordIsIncorrect_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.ChangeUserPassword("testuser", "WRONG_P@55w#rD!!", "NEW_P@55w#rD!!", "NEW_P@55w#rD!!");
+            var response = _userService.ChangeUserPassword(testUser.Username, "WRONG_P@55w#rD!!", "NEW_P@55w#rD!!", "NEW_P@55w#rD!!");
 
             // Assert
             Assert.False(response.IsSuccess);
@@ -247,7 +254,7 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeUserPassword_NewPasswordsDoNotMatch_ReturnsFailure(User testUser)
         {
             // Arrange
@@ -261,7 +268,7 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeUserPassword_OldPasswordCorrect_UpdatesPasswordSuccessfully(User testUser)
         {
             // Arrange
@@ -269,24 +276,25 @@ namespace BusinessLogicUnitTests
             _mockRepo.Setup(repo => repo.UpdateUser(It.IsAny<User>()));
 
             // Act
-            var response = _userService.ChangeUserPassword("testuser", "OLD_P@55w#rD!!", "NEW_P@55w#rD!!", "NEW_P@55w#rD!!");
+            var response = _userService.ChangeUserPassword(testUser.Username, "OLD_P@55w#rD!!", "NEW_P@55w#rD!!", "NEW_P@55w#rD!!");
 
             // Assert
             Assert.True(response.IsSuccess);
         }
 
-        [Fact]
-        public void ChangeUserPassword_ExceptionThrown_ReturnsFailure()
+        [Theory]
+        [BusinessLogicTestsFixture]
+        public void ChangeUserPassword_ExceptionThrown_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Throws<Exception>();
 
             // Act & Assert
-            Assert.Throws<Exception>(() => _userService.ChangeUserPassword("testuser", "OLD_P@55w#rD!!", "NEW_P@55w#rD!!", "NEW_P@55w#rD!!"));
+            Assert.Throws<Exception>(() => _userService.ChangeUserPassword(testUser.Username, "OLD_P@55w#rD!!", "NEW_P@55w#rD!!", "NEW_P@55w#rD!!"));
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeUserPassword_NewPasswordSameAsOld_ReturnsFailure(User testUser)
         {
             // Arrange
@@ -314,12 +322,13 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeRole_UserIsAdminAndOnlyAdminInTheSystem_ReturnsFailure(User testUser)
         {
             // Arrange
             testUser.Username = "adminuser";
             testUser.Role = UserRole.Admin;
+            
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
             _mockRepo.Setup(repo => repo.GetRoleCount(UserRole.Admin)).Returns(1);
 
@@ -332,7 +341,7 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeRole_RoleUpdateForExistingUser_ChangesRole(User testUser)
         {
             // Arrange
@@ -340,38 +349,39 @@ namespace BusinessLogicUnitTests
             _mockRepo.Setup(repo => repo.GetRoleCount(UserRole.Admin)).Returns(1);
 
             // Act
-            var response = _userService.ChangeRole("testuser", UserRole.Admin);
+            var response = _userService.ChangeRole(testUser.Username, UserRole.Admin);
 
             // Assert
             Assert.True(response.IsSuccess);
-            Assert.Equal($"Role for User 'testuser ({testUser.Id})' updated successfully!", response.Message);
+            Assert.Equal($"Role for User '{testUser.Username} ({testUser.Id})' updated successfully!", response.Message);
 
             _mockRepo.Verify(repo => repo.UpdateUser(testUser), Times.Once);
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeRole_NewRoleIsSameAsOldRole_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.ChangeRole("testuser", UserRole.Regular);
+            var response = _userService.ChangeRole(testUser.Username, UserRole.Regular);
 
             // Assert
             Assert.False(response.IsSuccess);
             Assert.Equal("User already has that role!", response.Message);
         }
 
-        [Fact]
-        public void ChangeRole_ExceptionThrown_ReturnsFailure()
+        [Theory]
+        [BusinessLogicTestsFixture]
+        public void ChangeRole_ExceptionThrown_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Throws<Exception>();
 
             // Act & Assert
-            Assert.Throws<Exception>(() => _userService.ChangeRole("testuser", UserRole.Admin));
+            Assert.Throws<Exception>(() => _userService.ChangeRole(testUser.Username, UserRole.Admin));
         }
 
         [Theory]
@@ -390,15 +400,16 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeRole_UserIsInactive_ReturnsFailure(User testUser)
         {
             // Arrange
             testUser.IsActive = false;
+            
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.ChangeRole("testuser", UserRole.Admin);
+            var response = _userService.ChangeRole(testUser.Username, UserRole.Admin);
 
             // Assert
             Assert.False(response.IsSuccess);
@@ -420,14 +431,14 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void GetUserActiveStatus_UserExists_ReturnsActiveStatus(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.GetUserActiveStatus("testuser");
+            var response = _userService.GetUserActiveStatus(testUser.Username);
 
             // Assert
             Assert.True(response.IsSuccess);
@@ -435,15 +446,16 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void GetUserActiveStatus_UserExists_ReturnsInactiveStatus(User testUser)
         {
             // Arrange
             testUser.IsActive = false;
+            
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.GetUserActiveStatus("testuser");
+            var response = _userService.GetUserActiveStatus(testUser.Username);
 
             // Assert
             Assert.True(response.IsSuccess);
@@ -465,14 +477,15 @@ namespace BusinessLogicUnitTests
             Assert.False(response.IsSuccess);
         }
 
-        [Fact]
-        public void GetUserActiveStatus_ExceptionThrown_ReturnsFailure()
+        [Theory]
+        [BusinessLogicTestsFixture]
+        public void GetUserActiveStatus_ExceptionThrown_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Throws<Exception>();
 
             // Act & Assert
-            Assert.Throws<Exception>(() => _userService.GetUserActiveStatus("testuser"));
+            Assert.Throws<Exception>(() => _userService.GetUserActiveStatus(testUser.Username));
         }
 
         [Fact]
@@ -489,14 +502,15 @@ namespace BusinessLogicUnitTests
             Assert.Equal("User does not exist!", response.Message);
         }
 
-        [Fact]
-        public void ChangeUserActiveStatus_SameUserAsLoggedIn_ReturnsFailure()
+        [Theory]
+        [BusinessLogicTestsFixture]
+        public void ChangeUserActiveStatus_SameUserAsLoggedIn_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(new User());
 
             // Act
-            var response = _userService.ChangeUserActiveStatus("testuser", "testuser");
+            var response = _userService.ChangeUserActiveStatus(testUser.Username, testUser.Username);
 
             // Assert
             Assert.False(response.IsSuccess);
@@ -504,16 +518,17 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeUserActiveStatus_UserExists_ChangesInactiveStatusToActive(User testUser)
         {
             // Arrange
             testUser.IsActive = false;
+            
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
             _mockRepo.Setup(repo => repo.UpdateUser(It.IsAny<User>()));
 
             // Act
-            var response = _userService.ChangeUserActiveStatus("testuser", "adminuser");
+            var response = _userService.ChangeUserActiveStatus(testUser.Username, "adminuser");
 
             // Assert
             Assert.True(response.IsSuccess);
@@ -523,28 +538,29 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeUserActiveStatus_UserExists_ChangesActiveStatusToInactive(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
 
             // Act
-            var response = _userService.ChangeUserActiveStatus("testuser", "adminuser");
+            var response = _userService.ChangeUserActiveStatus(testUser.Username, "adminuser");
 
             // Assert
             Assert.True(response.IsSuccess);
             Assert.Equal($"User '{testUser.Username} ({testUser.Id})' activity status changed to 'False' successfully!", response.Message);
         }
 
-        [Fact]
-        public void ChangeUserActiveStatus_ExceptionThrown_ReturnsFailure()
+        [Theory]
+        [BusinessLogicTestsFixture]
+        public void ChangeUserActiveStatus_ExceptionThrown_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Throws(new Exception());
 
             // Act
-            Assert.Throws<Exception>(() => _userService.ChangeUserActiveStatus("testuser", "adminuser"));
+            Assert.Throws<Exception>(() => _userService.ChangeUserActiveStatus(testUser.Username, "adminuser"));
         }
 
         [Theory]
@@ -579,7 +595,7 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void ChangeUserActiveStatus_UpdateUserThrowsException(User testUser)
         {
             // Arrange
@@ -590,14 +606,15 @@ namespace BusinessLogicUnitTests
             Assert.Throws<Exception>(() => _userService.ChangeUserActiveStatus(testUser.Username, "adminuser"));
         }
 
-        [Fact]
-        public void DeleteUser_UserDoesNotExist_ReturnsFailure()
+        [Theory]
+        [BusinessLogicTestsFixture]
+        public void DeleteUser_UserDoesNotExist_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns<User>(null);
 
             // Act
-            var response = _userService.DeleteUser("testuser", "adminuser");
+            var response = _userService.DeleteUser(testUser.Username, "adminuser");
 
             // Assert
             Assert.False(response.IsSuccess);
@@ -619,7 +636,7 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void DeleteUser_UserSuccessfullyDeleted_ReturnsSuccess(User testUser)
         {
             // Arrange
@@ -627,25 +644,26 @@ namespace BusinessLogicUnitTests
             _mockRepo.Setup(repo => repo.DeleteUser(It.IsAny<User>()));
 
             // Act
-            var response = _userService.DeleteUser("testuser", "adminuser");
+            var response = _userService.DeleteUser(testUser.Username, "adminuser");
 
             // Assert
             Assert.True(response.IsSuccess);
-            Assert.Equal($"User '{testUser.Username} ({testUser.Id})' deleted successfully!", response.Message);
+            Assert.Equal($"User '{testUser.Username} ({testUser.Id})' and their existing data (Person Information, Residence Place) deleted successfully!", response.Message);
         }
 
-        [Fact]
-        public void DeleteUser_GetUserThrowsException_ReturnsFailure()
+        [Theory]
+        [BusinessLogicTestsFixture]
+        public void DeleteUser_GetUserThrowsException_ReturnsFailure(User testUser)
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Throws(new Exception());
 
             // Act
-            Assert.Throws<Exception>(() => _userService.DeleteUser("testuser", "adminuser"));
+            Assert.Throws<Exception>(() => _userService.DeleteUser(testUser.Username, "adminuser"));
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void DeleteUser_DeleteUserThrowsException_ReturnsFailure(User testUser)
         {
             // Arrange
@@ -653,7 +671,7 @@ namespace BusinessLogicUnitTests
             _mockRepo.Setup(repo => repo.DeleteUser(testUser)).Throws(new Exception());
 
             // Act
-            Assert.Throws<Exception>(() => _userService.DeleteUser("testuser", "adminuser"));
+            Assert.Throws<Exception>(() => _userService.DeleteUser(testUser.Username, "adminuser"));
         }
 
         [Theory]
@@ -671,20 +689,21 @@ namespace BusinessLogicUnitTests
         }
 
         [Theory]
-        [UserFixture]
+        [BusinessLogicTestsFixture]
         public void DeleteUser_UserExistsButIsInactive_DeletesUserSuccessfully(User testUser)
         {
             // Arrange
             testUser.IsActive = false;
+            
             _mockRepo.Setup(repo => repo.GetUser(It.IsAny<string>())).Returns(testUser);
             _mockRepo.Setup(repo => repo.DeleteUser(It.IsAny<User>()));
 
             // Act
-            var response = _userService.DeleteUser("testuser", "adminuser");
+            var response = _userService.DeleteUser(testUser.Username, "adminuser");
 
             // Assert
             Assert.True(response.IsSuccess);
-            Assert.Equal($"User '{testUser.Username} ({testUser.Id})' deleted successfully!", response.Message);
+            Assert.Equal($"User '{testUser.Username} ({testUser.Id})' and their existing data (Person Information, Residence Place) deleted successfully!", response.Message);
         }
 
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

@@ -109,7 +109,6 @@ namespace RepositoryUnitTests
             mockDbSet.As<IQueryable<User>>().Setup(m => m.GetEnumerator()).Returns(users.GetEnumerator());
 
             var mockContext = new Mock<ApplicationDbContext>();
-            //mockContext.Setup(c => c.Users).Returns(mockDbSet.Object);
             mockContext.Setup(c => c.Users).Throws(new Exception("An error occurred while saving the entity changes"));
 
             var userRepository = new UserRepository(mockContext.Object);

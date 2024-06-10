@@ -66,9 +66,9 @@ namespace PeopleRegistration.BusinessLogic.Services
         {
             try
             {
-                var existingPersonInformation = personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personInformation.PersonalCode);
+                var existingPersonInformation = await personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personInformation.PersonalCode);
 
-                if (existingPersonInformation.Result is not null)
+                if (existingPersonInformation is not null)
                     throw new ArgumentException($"Person Information already exists by Personal Code '{personInformation.PersonalCode}' for User '{username}'!");
 
                 ResidencePlace residencePlace = null;
@@ -241,43 +241,67 @@ namespace PeopleRegistration.BusinessLogic.Services
             }
         }
 
-        private PersonInformationDto ConvertToDto(PersonInformation personInformation)
-        {
-            return new PersonInformationDto
-            {
-                Name = personInformation.Name,
-                LastName = personInformation.LastName,
-                Gender = personInformation.Gender,
-                DateOfBirth = personInformation.DateOfBirth,
-                PersonalCode = personInformation.PersonalCode,
-                PhoneNumber = personInformation.PhoneNumber,
-                Email = personInformation.Email,
-                ResidencePlace = personInformation.ResidencePlace is not null ? ConvertToDto(personInformation.ResidencePlace) : null
-            };
-        }
-
         private PersonInformationUpdateDto ConvertToUpdateDto(PersonInformation personInformation)
         {
-            return new PersonInformationUpdateDto
+            try
             {
-                Name = personInformation.Name,
-                LastName = personInformation.LastName,
-                Gender = personInformation.Gender,
-                PhoneNumber = personInformation.PhoneNumber,
-                Email = personInformation.Email,
-                ResidencePlace = personInformation.ResidencePlace is not null ? ConvertToDto(personInformation.ResidencePlace) : null
-            };
+                return new PersonInformationUpdateDto
+                {
+                    Name = personInformation.Name,
+                    LastName = personInformation.LastName,
+                    Gender = personInformation.Gender,
+                    PhoneNumber = personInformation.PhoneNumber,
+                    Email = personInformation.Email,
+                    ResidencePlace = personInformation.ResidencePlace is not null ? ConvertToDto(personInformation.ResidencePlace) : null
+                };
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(ConvertToUpdateDto)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        private PersonInformationDto ConvertToDto(PersonInformation personInformation)
+        {
+            try
+            {
+                return new PersonInformationDto
+                {
+                    Name = personInformation.Name,
+                    LastName = personInformation.LastName,
+                    Gender = personInformation.Gender,
+                    DateOfBirth = personInformation.DateOfBirth,
+                    PersonalCode = personInformation.PersonalCode,
+                    PhoneNumber = personInformation.PhoneNumber,
+                    Email = personInformation.Email,
+                    ResidencePlace = personInformation.ResidencePlace is not null ? ConvertToDto(personInformation.ResidencePlace) : null
+                };
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(ConvertToDto)}]: {e.Message}");
+                throw;
+            }
         }
 
         private ResidencePlaceDto ConvertToDto(ResidencePlace residencePlace)
         {
-            return new ResidencePlaceDto
+            try
             {
-                City = residencePlace.City,
-                Street = residencePlace.Street,
-                HouseNumber = residencePlace.HouseNumber,
-                ApartmentNumber = residencePlace.ApartmentNumber
-            };
+                return new ResidencePlaceDto
+                {
+                    City = residencePlace.City,
+                    Street = residencePlace.Street,
+                    HouseNumber = residencePlace.HouseNumber,
+                    ApartmentNumber = residencePlace.ApartmentNumber
+                };
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(ConvertToDto)}]: {e.Message}");
+                throw;
+            }
         }
     }
 }

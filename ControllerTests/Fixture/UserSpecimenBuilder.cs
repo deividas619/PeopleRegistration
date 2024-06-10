@@ -3,7 +3,7 @@ using PeopleRegistration.Shared.DTOs;
 
 namespace ControllerUnitTests.Fixture
 {
-    public class UserControllerTestsSpecimenBuilder : ISpecimenBuilder
+    public class ControllerTestsSpecimenBuilder : ISpecimenBuilder
     {
         public object Create(object request, ISpecimenContext context)
         {
@@ -22,6 +22,25 @@ namespace ControllerUnitTests.Fixture
                 {
                     Username = "testuser",
                     Password = "WRONG_P@55w#rD!!"
+                };
+            }
+
+            if (request is Type personInformation && personInformation == typeof(PersonInformationDto))
+            {
+                return new PersonInformationDto
+                {
+                    Name = "Test1",
+                    LastName = "User1",
+                    PersonalCode = "12345678901"
+                };
+            }
+
+            if (request is Type personInformationUpdate && personInformationUpdate == typeof(PersonInformationUpdateDto))
+            {
+                return new PersonInformationUpdateDto
+                {
+                    Name = "Test1",
+                    LastName = "User1"
                 };
             }
 

@@ -75,7 +75,6 @@ namespace PeopleRegistration.BusinessLogic.Services
                 userRepository.UpdateUser(user);
 
                 return new ResponseDto(true, "Password updated!");
-
             }
             catch (Exception e)
             {
@@ -178,7 +177,7 @@ namespace PeopleRegistration.BusinessLogic.Services
 
                 userRepository.DeleteUser(user);
 
-                return new ResponseDto(true, $"User '{user.Username} ({user.Id})' deleted successfully!");
+                return new ResponseDto(true, $"User '{user.Username} ({user.Id})' and their existing data (Person Information, Residence Place) deleted successfully!");
             }
             catch (Exception e)
             {
