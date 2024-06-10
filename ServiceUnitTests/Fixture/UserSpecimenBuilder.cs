@@ -10,7 +10,7 @@ namespace BusinessLogicUnitTests.Fixture
     {
         public object Create(object request, ISpecimenContext context)
         {
-            if (request is Type type && type == typeof(User))
+            if (request is Type userType && userType == typeof(User))
             {
                 CreatePasswordHash("OLD_P@55w#rD!!", out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -24,6 +24,16 @@ namespace BusinessLogicUnitTests.Fixture
                     Role = UserRole.Regular
                 };
             }
+
+            /*if (request is Type personInformation && personInformation == typeof(PersonInformation))
+            {
+                return new PersonInformation
+                {
+                    Name = "Test1",
+                    LastName = "User1",
+                    PersonalCode = "12345678901"
+                };
+            }*/
 
             return new NoSpecimen();
         }

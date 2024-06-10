@@ -1,10 +1,10 @@
 ﻿using AutoFixture.Xunit2;
 
-namespace BusinessLogicUnitTests.Fixture
+namespace RepositoryUnitTests.Fixture
 {
-    public class BusinessLogicTestsFixtureAttribute : AutoDataAttribute
+    public class RepositoryTestsFixtureAttribute : AutoDataAttribute
     {
-        public BusinessLogicTestsFixtureAttribute() : base(() =>
+        public RepositoryTestsFixtureAttribute() : base(() =>
         {
             var fixture = new AutoFixture.Fixture();
             fixture.Customizations.Add(new UserSpecimenBuilder());

@@ -4,18 +4,20 @@ using PeopleRegistration.Database.Repositories;
 using PeopleRegistration.Database;
 using PeopleRegistration.Shared.Entities;
 using PeopleRegistration.Shared.Enums;
+using RepositoryUnitTests.Fixture;
 
 namespace RepositoryUnitTests
 {
     public class UserRepositoryTests
     {
-        [Fact]
-        public void GetUser_ExistingUsername_ReturnsUser()
+        [Theory]
+        [RepositoryTestsFixture]
+        public void GetUser_ExistingUsername_ReturnsUser(User testUser)
         {
             // Arrange
             var users = new List<User>
             {
-                new User { Id = Guid.NewGuid(), Username = "existinguser", Password = new byte[0], PasswordSalt = new byte[0] }
+                testUser
             }.AsQueryable();
 
             var mockDbSet = new Mock<DbSet<User>>();
@@ -30,11 +32,11 @@ namespace RepositoryUnitTests
             var userRepository = new UserRepository(mockContext.Object);
 
             // Act
-            var result = userRepository.GetUser("existinguser");
+            var result = userRepository.GetUser(testUser.Username);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("existinguser", result.Username);
+            Assert.Equal(testUser.Username, result.Username);
         }
 
         [Fact]
@@ -95,12 +97,12 @@ namespace RepositoryUnitTests
             mockContext.Verify(context => context.SaveChanges(), Times.Once);
         }
 
-        [Fact]
-        public void SaveNewUser_ExistingUser_ThrowsException()
+        [Theory]
+        [RepositoryTestsFixture]
+        public void SaveNewUser_ExistingUser_ThrowsException(User testUser)
         {
             // Arrange
-            var existingUser = new User { Id = Guid.NewGuid(), Username = "existinguser", Password = new byte[0], PasswordSalt = new byte[0] };
-            var users = new List<User> { existingUser }.AsQueryable();
+            var users = new List<User> { testUser }.AsQueryable();
 
             var mockDbSet = new Mock<DbSet<User>>();
             mockDbSet.As<IQueryable<User>>().Setup(m => m.Provider).Returns(users.Provider);
@@ -112,7 +114,7 @@ namespace RepositoryUnitTests
             mockContext.Setup(c => c.Users).Throws(new Exception("An error occurred while saving the entity changes"));
 
             var userRepository = new UserRepository(mockContext.Object);
-            var newUser = new User { Id = Guid.NewGuid(), Username = "existinguser", Password = new byte[0], PasswordSalt = new byte[0] };
+            var newUser = new User { Id = testUser.Id, Username = testUser.Username, Password = testUser.Password, PasswordSalt = testUser.PasswordSalt };
 
             // Act & Assert
             var exception = Assert.Throws<Exception>(() => userRepository.SaveNewUser(newUser));
@@ -133,12 +135,11 @@ namespace RepositoryUnitTests
             Assert.Throws<NullReferenceException>(() => userRepository.SaveNewUser(null));
         }
 
-        [Fact]
-        public void UpdateUser_ExistingUser_UpdatesUser()
+        [Theory]
+        [RepositoryTestsFixture]
+        public void UpdateUser_ExistingUser_UpdatesUser(User testUser)
         {
             // Arrange
-            var existingUser = new User { Id = Guid.NewGuid(), Username = "existinguser", Password = new byte[0], PasswordSalt = new byte[0] };
-
             var mockDbSet = new Mock<DbSet<User>>();
             var mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(c => c.Users).Returns(mockDbSet.Object);
@@ -146,10 +147,10 @@ namespace RepositoryUnitTests
             var userRepository = new UserRepository(mockContext.Object);
 
             // Act
-            userRepository.UpdateUser(existingUser);
+            userRepository.UpdateUser(testUser);
 
             // Assert
-            mockContext.Verify(context => context.Update(existingUser), Times.Once);
+            mockContext.Verify(context => context.Update(testUser), Times.Once);
             mockContext.Verify(context => context.SaveChanges(), Times.Once);
         }
 

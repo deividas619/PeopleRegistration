@@ -16,7 +16,7 @@ namespace PeopleRegistration.API.Controllers
     {
         [HttpPost("Register")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Unauthorized]
         public ActionResult<ResponseDto> Register([FromQuery] UserDto request)
         {
@@ -38,7 +38,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpPost("Login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [AllowAnonymous]
         public ActionResult<ResponseDto> Login([FromQuery] LoginDto request)
         {
@@ -60,7 +60,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpPost("ChangePassword")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Authorize]
         public ActionResult<ResponseDto> ChangePassword([FromQuery] ChangePasswordDto request)
         {
@@ -83,7 +83,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpPost("ChangeRole")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public ActionResult<ResponseDto> ChangeRole([FromQuery, Required] string username, [FromQuery] UserRole newRole)
         {
@@ -105,7 +105,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpGet("GetUserActiveStatus")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public ActionResult<ResponseDto> GetUserActiveStatus([FromQuery, Required] string username)
         {
@@ -127,7 +127,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpPost("ChangeUserActiveStatus")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public ActionResult<ResponseDto> ChangeUserActiveStatus([FromQuery, Required] string username)
         {
@@ -150,7 +150,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpDelete("DeleteUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public ActionResult<ResponseDto> DeleteUser([FromQuery, Required] string username)
         {

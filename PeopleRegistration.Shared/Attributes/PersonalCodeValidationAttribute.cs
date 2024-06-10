@@ -15,18 +15,15 @@ namespace PeopleRegistration.Shared.Attributes
 
                 string genderCenturyPart = personalCode.Substring(0, 1);
                 string birthdatePart = personalCode.Substring(1, 6);
-                string serialNumberPart = personalCode.Substring(7, 3);
                 char checksumPart = personalCode[10];
 
-                int genderCentury;
-                if (!int.TryParse(genderCenturyPart, out genderCentury))
+                if (!int.TryParse(genderCenturyPart, out int genderCentury))
                     return new ValidationResult("Invalid format for gender digit (1st value)!");
 
                 int year = int.Parse(birthdatePart.Substring(0, 2)) + 1900;
                 if (year > DateTime.Now.Year)
                     year -= 100;
 
-                int gender = genderCentury % 2;
 
                 int expectedChecksum = Checksum(personalCode.Substring(0, 10));
 

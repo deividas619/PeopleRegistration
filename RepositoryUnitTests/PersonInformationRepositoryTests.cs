@@ -3,21 +3,34 @@ using Moq;
 using PeopleRegistration.Database.Repositories;
 using PeopleRegistration.Database;
 using PeopleRegistration.Shared.Entities;
+using RepositoryUnitTests.Fixture;
 
 namespace RepositoryUnitTests
 {
     public class PersonInformationRepositoryTests
     {
-        [Fact]
-        public async Task GetAllPeopleInformationForUser_ExistingUsername_ReturnsPeopleInformationList()
+        private void SetupMockDbSet(Mock<DbSet<PersonInformation>> mockDbSet, IEnumerable<PersonInformation> entities)
+        {
+            mockDbSet.As<IQueryable<PersonInformation>>().Setup(m => m.Provider).Returns(entities.AsQueryable().Provider);
+            mockDbSet.As<IQueryable<PersonInformation>>().Setup(m => m.Expression).Returns(entities.AsQueryable().Expression);
+            mockDbSet.As<IQueryable<PersonInformation>>().Setup(m => m.ElementType).Returns(entities.AsQueryable().ElementType);
+            mockDbSet.As<IQueryable<PersonInformation>>().Setup(m => m.GetEnumerator()).Returns(entities.AsQueryable().GetEnumerator());
+
+            mockDbSet.As<IAsyncEnumerable<PersonInformation>>()
+                .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+                .Returns(entities.ToAsyncEnumerable().GetAsyncEnumerator());
+        }
+
+        [Theory]
+        [RepositoryTestsFixture]
+        public async Task GetAllPeopleInformationForUser_ExistingUsername_ReturnsPeopleInformationList(User testUser)
         {
             // Arrange
-            var username = "existinguser";
             var personInformations = new List<PersonInformation>
             {
-                new PersonInformation { User = new User { Username = username } },
-                new PersonInformation { User = new User { Username = username } }
-            }.AsQueryable();
+                new PersonInformation { User = new User { Username = testUser.Username } },
+                new PersonInformation { User = new User { Username = testUser.Username } }
+            };
 
             var mockDbSet = new Mock<DbSet<PersonInformation>>();
             SetupMockDbSet(mockDbSet, personInformations);
@@ -28,22 +41,23 @@ namespace RepositoryUnitTests
             var personInformationRepository = new PersonInformationRepository(mockContext.Object);
 
             // Act
-            var result = await personInformationRepository.GetAllPeopleInformationForUser(username);
+            var result = await personInformationRepository.GetAllPeopleInformationForUser(testUser.Username);
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal(2, result.Count());
         }
 
-        [Fact]
-        public async Task GetAllPeopleInformationForUser_NonExistingUsername_ReturnsEmptyList()
+        [Theory]
+        [RepositoryTestsFixture]
+        public async Task GetAllPeopleInformationForUser_NonExistingUsername_ReturnsEmptyList(User testUser)
         {
             // Arrange
             var username = "nonexistinguser";
 
             var personInformations = new List<PersonInformation>
             {
-                new PersonInformation { User = new User { Username = "existinguser" } },
+                new PersonInformation { User = new User { Username = testUser.Username } },
             }.AsQueryable();
 
             var mockDbSet = new Mock<DbSet<PersonInformation>>();
@@ -61,13 +75,13 @@ namespace RepositoryUnitTests
             Assert.Empty(result);
         }
 
-        [Fact]
-        public async Task GetSinglePersonInformationForUserByPersonalCode_ExistingUserAndCode_ReturnsPersonInformation()
+        [Theory]
+        [RepositoryTestsFixture]
+        public async Task GetSinglePersonInformationForUserByPersonalCode_ExistingUserAndCode_ReturnsPersonInformation(User testUser)
         {
             // Arrange
-            var username = "existinguser";
             var personalCode = "1234567890";
-            var personInformation = new PersonInformation { User = new User { Username = username }, PersonalCode = personalCode };
+            var personInformation = new PersonInformation { User = new User { Username = testUser.Username }, PersonalCode = personalCode };
 
             var personInformations = new List<PersonInformation> { personInformation }.AsQueryable();
 
@@ -80,23 +94,23 @@ namespace RepositoryUnitTests
             var personInformationRepository = new PersonInformationRepository(mockContext.Object);
 
             // Act
-            var result = await personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personalCode);
+            var result = await personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(testUser.Username, personalCode);
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal(personalCode, result.PersonalCode);
         }
 
-        [Fact]
-        public async Task GetSinglePersonInformationForUserByPersonalCode_NonExistingUserAndCode_ReturnsNull()
+        [Theory]
+        [RepositoryTestsFixture]
+        public async Task GetSinglePersonInformationForUserByPersonalCode_NonExistingUserAndCode_ReturnsNull(User testUser, PersonInformation testPersonInformation)
         {
             // Arrange
             var username = "nonexistinguser";
-            var personalCode = "1234567890";
 
             var personInformations = new List<PersonInformation>
             {
-                new PersonInformation { User = new User { Username = "existinguser" }, PersonalCode = "9876543210" }
+                new PersonInformation { User = new User { Username = testUser.Username }, PersonalCode = "9876543210" }
             }.AsQueryable();
 
             var mockDbSet = new Mock<DbSet<PersonInformation>>();
@@ -108,7 +122,7 @@ namespace RepositoryUnitTests
             var personInformationRepository = new PersonInformationRepository(mockContext.Object);
 
             // Act
-            var result = await personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, personalCode);
+            var result = await personInformationRepository.GetSinglePersonInformationForUserByPersonalCode(username, testPersonInformation.PersonalCode);
 
             // Assert
             Assert.Null(result);
@@ -136,13 +150,12 @@ namespace RepositoryUnitTests
             Assert.Equal(personInformation, result);
         }
 
-        [Fact]
-        public async Task AddPersonInformationForUser_DuplicatePersonalCode_ThrowsException()
+        [Theory]
+        [RepositoryTestsFixture]
+        public async Task AddPersonInformationForUser_DuplicatePersonalCode_ThrowsException(PersonInformation testPersonInformation)
         {
             // Arrange
-            var personInformation = new PersonInformation { PersonalCode = "1234567890" };
-
-            var personInformations = new List<PersonInformation> { personInformation }.AsQueryable();
+            var personInformations = new List<PersonInformation> { testPersonInformation }.AsQueryable();
 
             var mockDbSet = new Mock<DbSet<PersonInformation>>();
             SetupMockDbSet(mockDbSet, personInformations);
@@ -154,7 +167,7 @@ namespace RepositoryUnitTests
             var personInformationRepository = new PersonInformationRepository(mockContext.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<DbUpdateException>(() => personInformationRepository.AddPersonInformationForUser(personInformation));
+            await Assert.ThrowsAsync<DbUpdateException>(() => personInformationRepository.AddPersonInformationForUser(testPersonInformation));
         }
 
         [Fact]
@@ -173,14 +186,13 @@ namespace RepositoryUnitTests
             await Assert.ThrowsAsync<NullReferenceException>(() => personInformationRepository.AddPersonInformationForUser(personInformation));
         }
 
-        [Fact]
-        public async Task UpdatePersonInformationForUserByPersonalCode_ValidRequest_UpdatesAndReturnsPersonInformation()
+        [Theory]
+        [RepositoryTestsFixture]
+        public async Task UpdatePersonInformationForUserByPersonalCode_ValidRequest_UpdatesAndReturnsPersonInformation(PersonInformation testPersonInformation)
         {
             // Arrange
-            var personInformation = new PersonInformation { PersonalCode = "1234567890" };
-
             var mockDbSet = new Mock<DbSet<PersonInformation>>();
-            mockDbSet.Setup(d => d.Update(It.IsAny<PersonInformation>())).Callback<PersonInformation>((s) => personInformation = s);
+            mockDbSet.Setup(d => d.Update(It.IsAny<PersonInformation>())).Callback<PersonInformation>((s) => testPersonInformation = s);
 
             var mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(c => c.PeopleInformation).Returns(mockDbSet.Object);
@@ -188,11 +200,11 @@ namespace RepositoryUnitTests
             var personInformationRepository = new PersonInformationRepository(mockContext.Object);
 
             // Act
-            var result = await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(personInformation);
+            var result = await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(testPersonInformation);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(personInformation, result);
+            Assert.Equal(testPersonInformation, result);
         }
 
         [Fact]
@@ -211,12 +223,11 @@ namespace RepositoryUnitTests
             await Assert.ThrowsAsync<NullReferenceException>(() => personInformationRepository.UpdatePersonInformationForUserByPersonalCode(personInformation));
         }
 
-        [Fact]
-        public async Task UpdatePersonInformationForUserByPersonalCode_NonExistingPersonInformation_ReturnsDefaultPersonInformation()
+        [Theory]
+        [RepositoryTestsFixture]
+        public async Task UpdatePersonInformationForUserByPersonalCode_NonExistingPersonInformation_ReturnsDefaultPersonInformation(PersonInformation testPersonInformation)
         {
             // Arrange
-            var personInformation = new PersonInformation { PersonalCode = "1234567890" };
-
             var personInformations = new List<PersonInformation>().AsQueryable();
 
             var mockDbSet = new Mock<DbSet<PersonInformation>>();
@@ -228,7 +239,7 @@ namespace RepositoryUnitTests
             var personInformationRepository = new PersonInformationRepository(mockContext.Object);
 
             // Act
-            var result = await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(personInformation);
+            var result = await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(testPersonInformation);
 
             // Assert
             Assert.NotNull(result);
@@ -240,14 +251,13 @@ namespace RepositoryUnitTests
             Assert.Null(result.Email);
         }
 
-        [Fact]
-        public async Task DeletePersonInformationForUserByPersonalCode_ExistingPersonInformation_RemovesAndReturnsPersonInformation()
+        [Theory]
+        [RepositoryTestsFixture]
+        public async Task DeletePersonInformationForUserByPersonalCode_ExistingPersonInformation_RemovesAndReturnsPersonInformation(PersonInformation testPersonInformation)
         {
             // Arrange
-            var personInformation = new PersonInformation { PersonalCode = "1234567890" };
-
             var mockDbSet = new Mock<DbSet<PersonInformation>>();
-            mockDbSet.Setup(d => d.Remove(It.IsAny<PersonInformation>())).Callback<PersonInformation>((s) => personInformation = null);
+            mockDbSet.Setup(d => d.Remove(It.IsAny<PersonInformation>())).Callback<PersonInformation>((s) => testPersonInformation = null);
 
             var mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(c => c.PeopleInformation).Returns(mockDbSet.Object);
@@ -255,19 +265,18 @@ namespace RepositoryUnitTests
             var personInformationRepository = new PersonInformationRepository(mockContext.Object);
 
             // Act
-            var result = await personInformationRepository.DeletePersonInformationForUserByPersonalCode(personInformation);
+            var result = await personInformationRepository.DeletePersonInformationForUserByPersonalCode(testPersonInformation);
 
             // Assert
-            Assert.Null(personInformation);
+            Assert.Null(testPersonInformation);
             Assert.NotNull(result);
         }
 
-        [Fact]
-        public async Task DeletePersonInformationForUserByPersonalCode_NonExistingPersonInformation_CompletesWithoutException()
+        [Theory]
+        [RepositoryTestsFixture]
+        public async Task DeletePersonInformationForUserByPersonalCode_NonExistingPersonInformation_CompletesWithoutException(PersonInformation testPersonInformation)
         {
             // Arrange
-            var personInformation = new PersonInformation { PersonalCode = "1234567890" };
-
             var personInformations = new List<PersonInformation>().AsQueryable();
 
             var mockDbSet = new Mock<DbSet<PersonInformation>>();
@@ -279,7 +288,7 @@ namespace RepositoryUnitTests
             var personInformationRepository = new PersonInformationRepository(mockContext.Object);
 
             // Act
-            var ex = await Record.ExceptionAsync(() => personInformationRepository.DeletePersonInformationForUserByPersonalCode(personInformation));
+            var ex = await Record.ExceptionAsync(() => personInformationRepository.DeletePersonInformationForUserByPersonalCode(testPersonInformation));
 
             // Assert
             Assert.Null(ex);
@@ -348,7 +357,15 @@ namespace RepositoryUnitTests
             var residencePlaces = new List<ResidencePlace>().AsQueryable();
 
             var mockDbSet = new Mock<DbSet<ResidencePlace>>();
-            SetupMockDbSet(mockDbSet, residencePlaces);
+
+            mockDbSet.As<IQueryable<ResidencePlace>>().Setup(m => m.Provider).Returns(residencePlaces.AsQueryable().Provider);
+            mockDbSet.As<IQueryable<ResidencePlace>>().Setup(m => m.Expression).Returns(residencePlaces.AsQueryable().Expression);
+            mockDbSet.As<IQueryable<ResidencePlace>>().Setup(m => m.ElementType).Returns(residencePlaces.AsQueryable().ElementType);
+            mockDbSet.As<IQueryable<ResidencePlace>>().Setup(m => m.GetEnumerator()).Returns(residencePlaces.AsQueryable().GetEnumerator());
+
+            mockDbSet.As<IAsyncEnumerable<ResidencePlace>>()
+                .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+                .Returns(residencePlaces.ToAsyncEnumerable().GetAsyncEnumerator());
 
             var mockContext = new Mock<ApplicationDbContext>();
             mockContext.Setup(c => c.ResidencePlaces).Returns(mockDbSet.Object);
@@ -360,14 +377,6 @@ namespace RepositoryUnitTests
 
             // Assert
             Assert.Null(ex);
-        }
-
-        private void SetupMockDbSet<T>(Mock<DbSet<T>> mockDbSet, IQueryable<T> entities) where T : class
-        {
-            mockDbSet.As<IQueryable<T>>().Setup(m => m.Provider).Returns(entities.Provider);
-            mockDbSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(entities.Expression);
-            mockDbSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(entities.ElementType);
-            mockDbSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(entities.GetEnumerator());
         }
     }
 }

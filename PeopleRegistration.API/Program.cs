@@ -9,9 +9,6 @@ using PeopleRegistration.BusinessLogic.Services;
 using PeopleRegistration.Database;
 using Serilog;
 
-//thread error when updating
-//check unit test fixtures everywhere and check whether tests are needed/logical
-
 namespace PeopleRegistration.API
 {
     public class Program
@@ -20,9 +17,7 @@ namespace PeopleRegistration.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .CreateLogger();
+            Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
 
             builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
             builder.Services.AddEndpointsApiExplorer();

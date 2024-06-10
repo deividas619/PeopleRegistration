@@ -84,6 +84,9 @@ namespace PeopleRegistration.BusinessLogic.Services
                     };
                 }
 
+                if (personInformation.DateOfBirth.Year.ToString().Substring(2) + personInformation.DateOfBirth.Month.ToString("00") + personInformation.DateOfBirth.Day.ToString("00") != personInformation.PersonalCode.Substring(1, 6))
+                    throw new ArgumentException($"Date of birth '{personInformation.DateOfBirth}' and Personal Code '{personInformation.PersonalCode}' do not match!");
+
                 await personInformationRepository.AddPersonInformationForUser(new PersonInformation
                 {
                     Name = personInformation.Name,
@@ -156,7 +159,7 @@ namespace PeopleRegistration.BusinessLogic.Services
                     }
 
                     if (request.ResidencePlace.City is null && request.ResidencePlace.Street is null && request.ResidencePlace.HouseNumber is null && request.ResidencePlace.ApartmentNumber is null && existingPersonInformation.ResidencePlace is not null)
-                        personInformationRepository.DeleteResidencePlaceForUser(existingPersonInformation.ResidencePlace);
+                        await personInformationRepository.DeleteResidencePlaceForUser(existingPersonInformation.ResidencePlace);
 
                     var repositoryOutput = await personInformationRepository.UpdatePersonInformationForUserByPersonalCode(existingPersonInformation);
 

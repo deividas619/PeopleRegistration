@@ -15,7 +15,7 @@ namespace PeopleRegistration.API.Controllers
     {
         [HttpGet("GetAllPeopleInformationForUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ResponseCache(Duration = 60)]
         public async Task<ActionResult<IEnumerable<PersonInformationDto>>> GetAllPeopleInformationForUser()
         {
@@ -38,7 +38,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpGet("GetSinglePersonInformationForUserByPersonalCode")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ResponseCache(Duration = 30)]
         public async Task<ActionResult<PersonInformationDto>> GetSinglePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
         {
@@ -59,10 +59,10 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
-        [ResponseCache(Duration = 300)]
         [HttpGet("GetPersonInformationPhotoByPersonalCode")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ResponseCache(Duration = 300)]
         public async Task<ActionResult<PersonInformationDto>> GetPersonInformationPhotoByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
         {
             try
@@ -84,7 +84,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpPost("AddPersonInformationForUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<PersonInformationDto>> AddPersonInformationForUser([FromForm] PersonInformationDto request)
         {
             try
@@ -118,7 +118,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpPut("UpdatePersonInformationForUserByPersonalCode")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PersonInformationDto>> UpdatePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode, [FromForm] PersonInformationUpdateDto request)
         {
             try
@@ -152,7 +152,7 @@ namespace PeopleRegistration.API.Controllers
 
         [HttpDelete("DeletePersonInformationForUserPersonalCode")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PersonInformationDto>> DeletePersonInformationForUserByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
         {
             try

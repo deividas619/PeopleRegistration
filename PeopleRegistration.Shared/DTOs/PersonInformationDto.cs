@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using PeopleRegistration.Shared.Attributes;
 using PeopleRegistration.Shared.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace PeopleRegistration.Shared.DTOs
@@ -18,7 +19,7 @@ namespace PeopleRegistration.Shared.DTOs
         public string PersonalCode { get; set; }
         [PhoneNumberValidation]
         public string? PhoneNumber { get; set; }
-        [EmailValidation]
+        [EmailAddress]
         public string? Email { get; set; }
         [MaxFileSize(10 * 1024 * 1024)]
         [AllowedExtensions([".png", ".jpg", ".jpeg", ".gif"])]

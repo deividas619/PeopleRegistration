@@ -43,23 +43,21 @@ namespace BusinessLogicUnitTests
         public async Task GetAllPeopleInformationForUser_ThrowsException_WhenErrorOccursInRepository()
         {
             // Arrange
-            string username = "testUser";
-            _personInformationRepositoryMock.Setup(x => x.GetAllPeopleInformationForUser(username)).ThrowsAsync(new Exception());
+            _personInformationRepositoryMock.Setup(x => x.GetAllPeopleInformationForUser("testUser")).ThrowsAsync(new Exception());
             var service = new PersonInformationService(_personInformationRepositoryMock.Object, _userRepoMock.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => service.GetAllPeopleInformationForUser(username));
+            await Assert.ThrowsAsync<Exception>(() => service.GetAllPeopleInformationForUser("testUser"));
         }
 
         [Fact]
         public async Task GetAllPeopleInformationForUser_ReturnsNull_WhenUsernameIsEmpty()
         {
             // Arrange
-            string username = string.Empty;
             var service = new PersonInformationService(_personInformationRepositoryMock.Object, _userRepoMock.Object);
 
             // Act
-            var result = await service.GetAllPeopleInformationForUser(username);
+            var result = await service.GetAllPeopleInformationForUser("");
 
             // Assert
             Assert.Empty(result);
