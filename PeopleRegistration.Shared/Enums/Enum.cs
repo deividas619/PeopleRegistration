@@ -13,7 +13,6 @@ namespace PeopleRegistration.Shared.Enums
     public enum Gender
     {
         Male,
-        Female,
-        Other
+        Female
     }
 }

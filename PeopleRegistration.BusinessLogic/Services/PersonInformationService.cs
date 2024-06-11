@@ -2,6 +2,7 @@
 using PeopleRegistration.Database.Interfaces;
 using PeopleRegistration.Shared.DTOs;
 using PeopleRegistration.Shared.Entities;
+using PeopleRegistration.Shared.Enums;
 using Serilog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -86,6 +87,9 @@ namespace PeopleRegistration.BusinessLogic.Services
 
                 if (personInformation.DateOfBirth.Year.ToString().Substring(2) + personInformation.DateOfBirth.Month.ToString("00") + personInformation.DateOfBirth.Day.ToString("00") != personInformation.PersonalCode.Substring(1, 6))
                     throw new ArgumentException($"Date of birth '{personInformation.DateOfBirth}' and Personal Code '{personInformation.PersonalCode}' do not match!");
+
+                if (personInformation.PersonalCode[0] % 2 == 0 && personInformation.Gender != Gender.Female || personInformation.PersonalCode[0] % 2 != 0 && personInformation.Gender != Gender.Male)
+                    throw new ArgumentException($"Personal Code first digit '{personInformation.PersonalCode[0]}' does not match Gender '{personInformation.Gender}'!");
 
                 await personInformationRepository.AddPersonInformationForUser(new PersonInformation
                 {
