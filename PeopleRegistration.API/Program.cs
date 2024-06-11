@@ -9,6 +9,18 @@ using PeopleRegistration.BusinessLogic.Services;
 using PeopleRegistration.Database;
 using Serilog;
 
+/*
+46310186868,1963-10-18,female
+47912273317,1979-12-27,female
+31505236180,1915-05-23,male
+61407050885,2014-07-05,female
+51301169746,2013-01-16,male
+47208018929,1972-08-01,female
+51212086740,2012-12-08,male
+47904102653,1979-04-10,female
+61508168620,2015-08-16,female
+33105040446,1931-05-04,male
+*/
 namespace PeopleRegistration.API
 {
     public class Program
