@@ -20,6 +20,19 @@ namespace PeopleRegistration.Database.Repositories
             }
         }
 
+        public async Task<IEnumerable<PersonInformation>> GetAllPeopleInformationForAdmin()
+        {
+            try
+            {
+                return await context.PeopleInformation.ToListAsync();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationRepository)}_{nameof(GetAllPeopleInformationForAdmin)}]: {e.Message}");
+                throw;
+            }
+        }
+
         public async Task<PersonInformation> GetSinglePersonInformationForUserByPersonalCode(string username, string personalCode)
         {
             try
@@ -29,6 +42,19 @@ namespace PeopleRegistration.Database.Repositories
             catch (Exception e)
             {
                 Log.Error($"[{nameof(PersonInformationRepository)}_{nameof(GetSinglePersonInformationForUserByPersonalCode)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        public async Task<PersonInformation> GetSinglePersonInformationForAdminByPersonalCode(string personalCode)
+        {
+            try
+            {
+                return await context.PeopleInformation.Where(pi => pi.PersonalCode == personalCode).FirstOrDefaultAsync();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationRepository)}_{nameof(GetSinglePersonInformationForAdminByPersonalCode)}]: {e.Message}");
                 throw;
             }
         }

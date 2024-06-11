@@ -5,6 +5,7 @@ using PeopleRegistration.Shared.DTOs;
 using Serilog;
 using System.Security.Claims;
 using PeopleRegistration.Shared.Attributes;
+using PeopleRegistration.Shared.Enums;
 
 namespace PeopleRegistration.API.Controllers
 {
@@ -36,6 +37,29 @@ namespace PeopleRegistration.API.Controllers
             }
         }
 
+        [HttpGet("GetAllPeopleInformationForAdmin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ResponseCache(Duration = 60)]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<ActionResult<IEnumerable<PersonInformationAdminDto>>> GetAllPeopleInformationForAdmin()
+        {
+            try
+            {
+                var result = await personInformationService.GetAllPeopleInformationForAdmin();
+
+                if (result is null)
+                    return NotFound($"There is no information stored!");
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationController)}_{nameof(GetAllPeopleInformationForAdmin)}]: {e.Message}");
+                throw;
+            }
+        }
+
         [HttpGet("GetSinglePersonInformationForUserByPersonalCode")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -55,6 +79,29 @@ namespace PeopleRegistration.API.Controllers
             catch (Exception e)
             {
                 Log.Error($"[{nameof(PersonInformationController)}_{nameof(GetSinglePersonInformationForUserByPersonalCode)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        [HttpGet("GetSinglePersonInformationForAdminByPersonalCode")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ResponseCache(Duration = 30)]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<ActionResult<PersonInformationAdminDto>> GetSinglePersonInformationForAdminByPersonalCode([FromQuery, PersonalCodeValidation] string personalCode)
+        {
+            try
+            {
+                var result = await personInformationService.GetSinglePersonInformationForAdminByPersonalCode(personalCode);
+
+                if (result is null)
+                    return NotFound($"There is no information by Personal Code '{personalCode}'!");
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationController)}_{nameof(GetSinglePersonInformationForAdminByPersonalCode)}]: {e.Message}");
                 throw;
             }
         }

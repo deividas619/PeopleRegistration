@@ -27,7 +27,24 @@ namespace PeopleRegistration.BusinessLogic.Services
                 throw;
             }
         }
-        
+
+        public async Task<IEnumerable<PersonInformationAdminDto>> GetAllPeopleInformationForAdmin()
+        {
+            try
+            {
+                var repositoryOutput = await personInformationRepository.GetAllPeopleInformationForAdmin();
+                if (repositoryOutput is not null)
+                    return repositoryOutput.Select(ConvertToAdminDto).ToList();
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(GetAllPeopleInformationForAdmin)}]: {e.Message}");
+                throw;
+            }
+        }
+
         public async Task<PersonInformationDto> GetSinglePersonInformationForUserByPersonalCode(string username, string personalCode)
         {
             try
@@ -41,6 +58,23 @@ namespace PeopleRegistration.BusinessLogic.Services
             catch (Exception e)
             {
                 Log.Error($"[{nameof(PersonInformationService)}_{nameof(GetSinglePersonInformationForUserByPersonalCode)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        public async Task<PersonInformationAdminDto> GetSinglePersonInformationForAdminByPersonalCode(string personalCode)
+        {
+            try
+            {
+                var repositoryOutput = await personInformationRepository.GetSinglePersonInformationForAdminByPersonalCode(personalCode);
+                if (repositoryOutput is not null)
+                    return ConvertToAdminDto(repositoryOutput);
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(GetSinglePersonInformationForAdminByPersonalCode)}]: {e.Message}");
                 throw;
             }
         }
@@ -89,7 +123,7 @@ namespace PeopleRegistration.BusinessLogic.Services
                     throw new ArgumentException($"Date of birth '{personInformation.DateOfBirth}' and Personal Code '{personInformation.PersonalCode}' do not match!");
 
                 if (personInformation.PersonalCode[0] % 2 == 0 && personInformation.Gender != Gender.Female || personInformation.PersonalCode[0] % 2 != 0 && personInformation.Gender != Gender.Male)
-                    throw new ArgumentException($"Personal Code first digit '{personInformation.PersonalCode[0]}' does not match Gender '{personInformation.Gender}'!");
+                    throw new ArgumentException($"Personal Code identifier '{personInformation.PersonalCode[0]}' does not match with Gender '{personInformation.Gender}'!");
 
                 await personInformationRepository.AddPersonInformationForUser(new PersonInformation
                 {
@@ -265,6 +299,24 @@ namespace PeopleRegistration.BusinessLogic.Services
             catch (Exception e)
             {
                 Log.Error($"[{nameof(PersonInformationService)}_{nameof(ConvertToUpdateDto)}]: {e.Message}");
+                throw;
+            }
+        }
+
+        private PersonInformationAdminDto ConvertToAdminDto(PersonInformation personInformation)
+        {
+            try
+            {
+                return new PersonInformationAdminDto
+                {
+                    Id = personInformation.Id,
+                    Name = personInformation.Name,
+                    LastName = personInformation.LastName
+                };
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[{nameof(PersonInformationService)}_{nameof(ConvertToAdminDto)}]: {e.Message}");
                 throw;
             }
         }
