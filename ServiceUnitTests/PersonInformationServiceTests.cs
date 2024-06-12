@@ -64,21 +64,38 @@ namespace BusinessLogicUnitTests
         }
 
         [Fact]
-        public async Task GetSinglePersonInformationForUserByPersonalCode_ReturnsCorrectData()
+        public async Task GetAllPeopleInformationForAdmin_ReturnsListOfPeople()
         {
             // Arrange
-            var personInformation = new List<PersonInformation>
+            var personInformation = new List<PersonInformation>()
             {
-                new PersonInformation { Name = "Test1", LastName = "User1", PersonalCode = "12345678901" },
-                new PersonInformation { Name = "Test2", LastName = "User2", PersonalCode = "12345678902" }
+                new PersonInformation { Id = Guid.NewGuid(), Name = "Test1", LastName = "User1" },
+                new PersonInformation { Id = Guid.NewGuid(), Name = "Test2", LastName = "User2" }
             };
-            
-            _personInformationRepositoryMock.Setup(x => x.GetSinglePersonInformationForUserByPersonalCode("testUser", "12345")).ReturnsAsync(personInformation.FirstOrDefault);
+
+            _personInformationRepositoryMock.Setup(x => x.GetAllPeopleInformationForAdmin()).ReturnsAsync(personInformation);
 
             var service = new PersonInformationService(_personInformationRepositoryMock.Object, _userRepoMock.Object);
 
             // Act
-            var result = await service.GetSinglePersonInformationForUserByPersonalCode("testUser", "12345");
+            var result = await service.GetAllPeopleInformationForAdmin();
+
+            // Assert
+            Assert.Equal(2, result.Count());
+        }
+
+        [Fact]
+        public async Task GetSinglePersonInformationForUserByPersonalCode_ReturnsCorrectData()
+        {
+            // Arrange
+            var testUser = new PersonInformation { Name = "Test1", LastName = "User1", PersonalCode = "12345678902" };
+            
+            _personInformationRepositoryMock.Setup(x => x.GetSinglePersonInformationForUserByPersonalCode("Test1", "12345678902")).ReturnsAsync(testUser);
+
+            var service = new PersonInformationService(_personInformationRepositoryMock.Object, _userRepoMock.Object);
+
+            // Act
+            var result = await service.GetSinglePersonInformationForUserByPersonalCode("Test1", "12345678902");
 
             // Assert
             Assert.NotNull(result);
@@ -120,6 +137,23 @@ namespace BusinessLogicUnitTests
 
             // Assert
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetSinglePersonInformationForAdminByPersonalCode_ReturnsPersonInfo()
+        {
+            // Arrange
+            var testUser = new PersonInformation { Name = "Test1", LastName = "User1", PersonalCode = "12345678902" };
+
+            _personInformationRepositoryMock.Setup(x => x.GetSinglePersonInformationForAdminByPersonalCode("12345678902")).ReturnsAsync(testUser);
+
+            var service = new PersonInformationService(_personInformationRepositoryMock.Object, _userRepoMock.Object);
+
+            // Act
+            var result = await service.GetSinglePersonInformationForAdminByPersonalCode("12345678902");
+
+            // Assert
+            Assert.NotNull(result);
         }
 
         [Fact]

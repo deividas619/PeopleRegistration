@@ -110,6 +110,49 @@ namespace ControllerUnitTests
             Assert.Empty(returnValue);
         }
 
+        [Fact]
+        public async Task GetAllPeopleInformationForAdmin_ReturnsOkResult_WithListOfPeople()
+        {
+            // Arrange
+            var testPeople = new List<PersonInformationAdminDto>()
+            {
+                new PersonInformationAdminDto { Id = Guid.NewGuid(), Name = "Test1", LastName = "User1" },
+                new PersonInformationAdminDto { Id = Guid.NewGuid(), Name = "Test2", LastName = "User2" }
+            };
+            _mockService.Setup(service => service.GetAllPeopleInformationForAdmin()).ReturnsAsync(testPeople);
+
+            // Act
+            var result = await _controller.GetAllPeopleInformationForAdmin();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var returnValue = Assert.IsType<List<PersonInformationAdminDto>>(okResult.Value);
+            Assert.Equal(testPeople.Count, returnValue.Count);
+        }
+
+        [Fact]
+        public async Task GetAllPeopleInformationForAdmin_ReturnsNotFoundResult_WhenNoPeopleExist()
+        {
+            // Arrange
+            _mockService.Setup(service => service.GetAllPeopleInformationForAdmin()).ReturnsAsync((List<PersonInformationAdminDto>)null);
+
+            // Act
+            var result = await _controller.GetAllPeopleInformationForAdmin();
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public async Task GetAllPeopleInformationForAdmin_ThrowsException()
+        {
+            // Arrange
+            _mockService.Setup(service => service.GetAllPeopleInformationForAdmin()).ThrowsAsync(new Exception());
+
+            // Act & Assert
+            await Assert.ThrowsAsync<Exception>(() => _controller.GetAllPeopleInformationForAdmin());
+        }
+
         [Theory]
         [ControllerTestsFixture]
         public async Task GetSinglePersonInformationForUserByPersonalCode_ReturnOk(PersonInformationDto testUser)
@@ -162,6 +205,45 @@ namespace ControllerUnitTests
 
             // Assert
             Assert.IsType<NotFoundObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public async Task GetSinglePersonInformationForAdminByPersonalCode_ReturnsOkResult_WithPersonInfo()
+        {
+            // Arrange
+            var testPerson = new PersonInformationAdminDto { Id = Guid.NewGuid(), Name = "Test1", LastName = "User1" };
+            _mockService.Setup(service => service.GetSinglePersonInformationForAdminByPersonalCode(It.IsAny<string>())).ReturnsAsync(testPerson);
+
+            // Act
+            var result = await _controller.GetSinglePersonInformationForAdminByPersonalCode("test");
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var returnValue = Assert.IsType<PersonInformationAdminDto>(okResult.Value);
+            Assert.Equal(testPerson, returnValue);
+        }
+
+        [Fact]
+        public async Task GetSinglePersonInformationForAdminByPersonalCode_ReturnsNotFoundResult_WhenPersonDoesNotExist()
+        {
+            // Arrange
+            _mockService.Setup(service => service.GetSinglePersonInformationForAdminByPersonalCode(It.IsAny<string>())).ReturnsAsync((PersonInformationAdminDto)null);
+
+            // Act
+            var result = await _controller.GetSinglePersonInformationForAdminByPersonalCode("test");
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public async Task GetSinglePersonInformationForAdminByPersonalCode_ThrowsException()
+        {
+            // Arrange
+            _mockService.Setup(service => service.GetSinglePersonInformationForAdminByPersonalCode(It.IsAny<string>())).ThrowsAsync(new Exception());
+
+            // Act & Assert
+            await Assert.ThrowsAsync<Exception>(() => _controller.GetSinglePersonInformationForAdminByPersonalCode("test"));
         }
 
         [Theory]
