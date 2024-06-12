@@ -2,9 +2,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PersonRegistration.BusinessLogic.Interfaces;
+using PeopleRegistration.BusinessLogic.Interfaces;
 
-namespace PersonRegistration.UI.Pages
+namespace PeopleRegistration.UI.Pages
 {
     [Authorize]
     public class ChangePasswordModel(IUserService userService) : PageModel

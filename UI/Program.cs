@@ -1,12 +1,12 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using PersonRegistration.BusinessLogic;
-using PersonRegistration.BusinessLogic.Interfaces;
-using PersonRegistration.BusinessLogic.Services;
-using PersonRegistration.Database;
+using PeopleRegistration.BusinessLogic;
+using PeopleRegistration.BusinessLogic.Interfaces;
+using PeopleRegistration.BusinessLogic.Services;
+using PeopleRegistration.Database;
 
-namespace PersonRegistration.UI
+namespace PeopleRegistration.UI
 {
     public class Program
     {
